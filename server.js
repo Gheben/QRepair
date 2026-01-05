@@ -400,7 +400,7 @@ app.get('/api/settings', (req, res) => {
  */
 app.post('/api/settings', requireAuth, (req, res) => {
     try {
-        const { nomeAzienda, telefono, logo } = req.body;
+        const { nomeAzienda, telefono, logo, baseUrl } = req.body;
         
         if (!nomeAzienda || !telefono) {
             return res.status(400).json({ 
@@ -409,11 +409,54 @@ app.post('/api/settings', requireAuth, (req, res) => {
             });
         }
         
-        const settings = { nomeAzienda, telefono, logo: logo || null };
+        const settings = { nomeAzienda, telefono, baseUrl: baseUrl || '', logo: logo || null };
         saveSettings(settings);
         res.json({ success: true, data: settings });
     } catch (error) {
         console.error('Errore POST settings:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * POST /api/manutenzioni/update-urls - Aggiorna tutti gli URL con il nuovo baseUrl (PROTETTA)
+ */
+app.post('/api/manutenzioni/update-urls', requireAuth, (req, res) => {
+    try {
+        const { baseUrl } = req.body;
+        
+        if (!baseUrl) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'baseUrl is required' 
+            });
+        }
+        
+        // Recupera tutti i record
+        const records = db.getAll();
+        
+        let updated = 0;
+        
+        for (const record of records) {
+            const newUrl = `${baseUrl}/info?id=${record.id}`;
+            // Aggiorna usando il metodo update esistente
+            db.update(record.id, {
+                nome: record.nome,
+                tel: record.tel,
+                modello: record.modello,
+                serialNumber: record.serialNumber,
+                data: record.data,
+                scadenza: record.scadenza,
+                url: newUrl,
+                lingua: record.lingua,
+                client_id: record.client_id
+            });
+            updated++;
+        }
+        
+        res.json({ success: true, updated });
+    } catch (error) {
+        console.error('Errore update URLs:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });

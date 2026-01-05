@@ -211,8 +211,14 @@ Before creating QR codes, configure your company data:
 2. Enter:
    - **Company Name** (e.g., "GB Service")
    - **Phone Number** (e.g., "+39 333 1234567")
+   - **Public Base URL** (optional, e.g., "https://yourdomain.com") - *see note below*
    - **Company Logo** (optional, max 5MB, PNG format recommended for transparency)
 3. Click "💾 Save Settings"
+
+> **📌 Base URL Configuration:**  
+> If you access the system via different URLs (e.g., local IP, domain name), configure the **Public Base URL** to ensure QR codes always point to your public domain.
+> - **Example:** If you access via `192.168.1.100:5126` locally but want QR codes to point to `https://myservice.com`, enter `https://myservice.com` as Base URL.
+> - **Update existing QR codes:** After changing the Base URL, use the "🔄 UPDATE ALL QR CODES URLs" button to update all existing QR codes with the new URL.
 
 ### 3. QR Code Creation
 

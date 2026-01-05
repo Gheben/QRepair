@@ -428,7 +428,8 @@
             }
             
             // Crea l'URL con solo l'ID del record
-            const baseUrl = window.location.origin + '/info';
+            // Usa baseUrl dalle impostazioni se disponibile, altrimenti usa l'origine corrente
+            const baseUrl = (fornitoreSetting.baseUrl || window.location.origin) + '/info';
             const url = `${baseUrl}?id=${recordId}`;
             
             // Aggiorna il record con l'URL generato

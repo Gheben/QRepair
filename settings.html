@@ -24,6 +24,12 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="baseUrl">Public Base URL (optional)</label>
+                    <input type="url" id="baseUrl" name="baseUrl" placeholder="e.g. https://myservice.com">
+                    <small style="color: #666;">The public URL where QR codes will point. If empty, uses current browser URL</small>
+                </div>
+
+                <div class="form-group">
                     <label for="logo">Company Logo (optional)</label>
                     <input type="file" id="logo" name="logo" accept="image/*" style="padding: 10px;">
                     <small style="color: #666;">The logo will be displayed on the QR code page. Maximum size: 5MB</small>
@@ -38,6 +44,12 @@
                     <a href="dashboard" class="btn" style="flex: 1; text-align: center; text-decoration: none; background: #6c757d;">↩️ Back to Dashboard</a>
                 </div>
             </form>
+
+            <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px;">
+                <h3 style="margin-top: 0;">🔄 Update Existing QR Codes</h3>
+                <p style="margin-bottom: 10px;">If you changed the Base URL, click here to update all existing QR codes with the new URL.</p>
+                <button onclick="updateAllUrls()" class="btn" style="background: #ffc107; color: #000;">🔄 UPDATE ALL QR CODES URLs</button>
+            </div>
 
             <div id="success-message" style="display: none; margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 10px; color: #155724;">
                 ✅ Settings saved successfully!
@@ -127,6 +139,7 @@
                 if (result.success && result.data) {
                     document.getElementById('nomeAzienda').value = result.data.nomeAzienda || '';
                     document.getElementById('telefono').value = result.data.telefono || '';
+                    document.getElementById('baseUrl').value = result.data.baseUrl || '';
                     
                     if (result.data.logo) {
                         currentLogo = result.data.logo;
@@ -145,6 +158,7 @@
             
             const nomeAzienda = document.getElementById('nomeAzienda').value;
             const telefono = document.getElementById('telefono').value;
+            const baseUrl = document.getElementById('baseUrl').value;
             
             try {
                 const response = await fetch(`${API_BASE}/settings`, {
@@ -153,6 +167,7 @@
                     body: JSON.stringify({ 
                         nomeAzienda, 
                         telefono,
+                        baseUrl,
                         logo: currentLogo 
                     })
                 });
@@ -173,5 +188,32 @@
                 alert('Error saving settings');
             }
         });
+        
+        async function updateAllUrls() {
+            if (!confirm('This will update ALL existing QR code URLs with the current Base URL setting. Continue?')) {
+                return;
+            }
+            
+            try {
+                const baseUrl = document.getElementById('baseUrl').value || window.location.origin;
+                
+                const response = await fetch(`${API_BASE}/manutenzioni/update-urls`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ baseUrl })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ Successfully updated ${result.updated} QR code URLs!`);
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error updating URLs:', error);
+                alert('❌ Connection error');
+            }
+        }
     </script>
 
