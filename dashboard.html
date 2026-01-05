@@ -226,6 +226,12 @@
             justify-content: center;
         }
         
+        #modal-info {
+            text-align: left;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
         @media (max-width: 768px) {
             table {
                 font-size: 12px;
@@ -310,9 +316,17 @@
     <!-- Modal per visualizzare QR -->
     <div id="qr-modal" class="modal">
         <div class="modal-content">
+            <div class="print-header" style="display: none;">
+                <img id="print-logo" src="" alt="" style="max-height: 100px; margin: 0 auto 15px auto; display: none;">
+                <h1 id="print-company" style="margin: 10px 0; font-size: 26px; font-weight: bold;"></h1>
+                <p id="print-contact" style="margin: 5px 0 20px 0; font-size: 18px;"></p>
+            </div>
             <h2 id="modal-title">QR Code</h2>
             <div class="modal-qr" id="modal-qr"></div>
             <p id="modal-info"></p>
+            <div class="print-footer" style="display: none;">
+                <p style="font-size: 10px; color: #999; margin-top: 40px;">Powered by QRepair Service</p>
+            </div>
             <button onclick="closeModal()" class="btn btn-secondary">Close</button>
             <button onclick="printQR()" class="btn btn-print">🖨️ Print</button>
         </div>
@@ -533,7 +547,7 @@
             renderTable(filteredRecords);
         }
         
-        function viewQR(recordId) {
+        async function viewQR(recordId) {
             const record = allRecords.find(r => r.id === recordId);
             if (!record) return;
             
@@ -543,12 +557,39 @@
             // Salva l'ID del record nel modal per riferimento futuro
             modal.dataset.recordId = record.id;
             
+            // Carica le impostazioni per la stampa
+            try {
+                const response = await fetch('/api/settings');
+                const result = await response.json();
+                const settings = result.data || result; // Gestisce sia { data: {...} } che {...}
+                
+                // Popola l'header per la stampa
+                document.getElementById('print-company').textContent = settings.nomeAzienda || '';
+                document.getElementById('print-contact').textContent = settings.telefono || '';
+                
+                // Carica il logo se esiste
+                const logoImg = document.getElementById('print-logo');
+                console.log('Logo settings:', settings.logo ? 'Presente' : 'Assente');
+                if (settings.logo) {
+                    // Se il logo è una stringa base64 senza prefisso, aggiungi il data URI
+                    const logoSrc = settings.logo.startsWith('data:') ? settings.logo : `data:image/png;base64,${settings.logo}`;
+                    console.log('Logo src impostato, lunghezza:', logoSrc.length);
+                    logoImg.src = logoSrc;
+                    logoImg.style.display = 'block';
+                    console.log('Logo display:', logoImg.style.display);
+                } else {
+                    logoImg.style.display = 'none';
+                    console.log('Logo nascosto - nessun logo in settings');
+                }
+            } catch (err) {
+                console.error('Errore caricamento settings:', err);
+            }
+            
             document.getElementById('modal-title').textContent = record.nome;
             document.getElementById('modal-info').innerHTML = `
-                📞 ${record.tel}<br>
-                🔧 ${record.modello || 'N/D'}<br>
-                � S/N: ${record.serialNumber || 'N/D'}<br>
-                �📅 ${record.data}
+                <span class="phone-line"><strong>📞 Phone:</strong> ${record.tel}<br></span>
+                <strong>🔧 Model:</strong> ${record.modello || 'N/A'}<br>
+                <strong>🔢 S/N:</strong> ${record.serialNumber || 'N/A'}
             `;
             
             // Genera l'URL se non esiste o se è vuoto
@@ -806,19 +847,81 @@
     
     <style>
         @media print {
+            @page {
+                margin: 1cm;
+                size: A4 portrait;
+            }
+            
             body * {
                 visibility: hidden;
             }
+            
             #qr-modal, #qr-modal * {
                 visibility: visible;
             }
+            
             #qr-modal {
                 position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
+                left: 0;
+                top: 0;
+                transform: none;
                 background: white;
+                width: 100%;
+                height: 100%;
             }
+            
+            #qr-modal .modal-content {
+                max-width: 100%;
+                padding: 20px;
+                box-shadow: none;
+                text-align: center;
+            }
+            
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 30px;
+                border-bottom: 3px solid #333;
+                padding-bottom: 20px;
+            }
+            
+            .print-footer {
+                display: block !important;
+                text-align: center;
+                margin-top: 40px;
+                border-top: 1px solid #ddd;
+                padding-top: 10px;
+            }
+            
+            #print-logo {
+                max-height: 100px !important;
+                margin: 0 auto 15px auto !important;
+            }
+            
+            #modal-title {
+                font-size: 22px;
+                margin: 20px 0;
+            }
+            
+            .modal-qr {
+                margin: 30px auto;
+                page-break-inside: avoid;
+            }
+            
+            #modal-info {
+                font-size: 18px;
+                line-height: 1.8;
+                margin-top: 30px;
+                text-align: left;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            #modal-info .phone-line {
+                display: none;
+            }
+            
             button {
                 display: none !important;
             }
