@@ -537,13 +537,23 @@
         
         // Visualizza manutenzioni cliente
         function viewMaintenances(clientId) {
+            console.log('viewMaintenances called with clientId:', clientId);
+            console.log('allClients:', allClients);
+            
             const client = allClients.find(c => c.id === clientId);
-            if (!client) return;
+            console.log('Found client:', client);
+            
+            if (!client) {
+                console.error('Client not found with id:', clientId);
+                return;
+            }
             
             document.getElementById('maintenances-title').textContent = 
                 `🔧 Manutenzioni di ${client.nome} ${client.cognome}`;
             
             const clientMaintenances = allMaintenances.filter(m => m.client_id === clientId);
+            console.log('Client maintenances:', clientMaintenances);
+            
             const sorted = clientMaintenances.sort((a, b) => 
                 new Date(b.data) - new Date(a.data)
             );
