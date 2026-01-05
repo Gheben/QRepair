@@ -6,7 +6,7 @@ services:
     container_name: qrepair
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "5126:5126"
     volumes:
       - ./data:/app/data
       - ./manutenzioni.db:/app/manutenzioni.db
@@ -14,4 +14,4 @@ services:
       - ./uploads:/app/uploads
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=5126

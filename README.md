@@ -40,7 +40,7 @@
 
 **Prerequisites:**
 - Docker and Docker Compose installed
-- Available port 3000
+- Available port 5126
 
 **Quick Start:**
 
@@ -59,13 +59,13 @@ docker ps
 docker logs qrepair
 ```
 
-Access the application at `http://localhost:3000`
+Access the application at `http://localhost:5126`
 
 **Docker Compose Configuration:**
 
 The `docker-compose.yml` file includes:
 - Automatic container restart
-- Port mapping (3000:3000)
+- Port mapping (5126:5126)
 - Persistent volumes for database, settings, and uploads
 - Production environment
 
@@ -110,7 +110,7 @@ docker-compose up -d --build
 
 4. **Open your browser**
    ```
-   http://localhost:3000/login
+   http://localhost:5126/login
    ```
 
 ---
@@ -158,7 +158,7 @@ On first startup, the system automatically creates an administrator user:
 
 ### 1. Login
 
-1. Open `http://localhost:3000/login`
+1. Open `http://localhost:5126/login`
 2. Enter your credentials
 3. Click "Login"
 
@@ -166,7 +166,7 @@ On first startup, the system automatically creates an administrator user:
 
 Before creating QR codes, configure your company data:
 
-1. Go to `http://localhost:3000/settings`
+1. Go to `http://localhost:5126/settings`
 2. Enter:
    - **Company Name** (e.g., "GB Service")
    - **Phone Number** (e.g., "+39 333 1234567")
@@ -175,7 +175,7 @@ Before creating QR codes, configure your company data:
 
 ### 3. QR Code Creation
 
-1. Go to `http://localhost:3000` (creation page)
+1. Go to `http://localhost:5126` (creation page)
 2. Fill in the form:
    - **Customer Name** *(required)*
    - **Customer Phone** *(required)*
@@ -190,7 +190,7 @@ Before creating QR codes, configure your company data:
 
 ### 4. Dashboard - Maintenance Management
 
-Access the dashboard at `http://localhost:3000/dashboard`:
+Access the dashboard at `http://localhost:5126/dashboard`:
 
 #### Features:
 - **📊 Statistics**: Total records, monthly maintenances, unique customers
@@ -205,7 +205,7 @@ Access the dashboard at `http://localhost:3000/dashboard`:
 
 ### 5. Info Page (Public)
 
-When a customer scans the QR code, they automatically access `http://localhost:3000/info?id=XXX`:
+When a customer scans the QR code, they automatically access `http://localhost:5126/info?id=XXX`:
 
 **Information Displayed:**
 - 🏢 Company Name and Logo
@@ -225,7 +225,7 @@ When a customer scans the QR code, they automatically access `http://localhost:3
 
 ### 6. User Management
 
-Access `http://localhost:3000/users` from the Dashboard:
+Access `http://localhost:5126/users` from the Dashboard:
 
 #### Available Operations:
 - **➕ Create New User**: Username, Password, Full name
@@ -367,7 +367,7 @@ Edit `docker-compose.yml` to add:
 ```yaml
 environment:
   - NODE_ENV=production
-  - PORT=3000
+  - PORT=5126
   - SESSION_SECRET=your-very-secure-random-secret-key
 ```
 
@@ -379,7 +379,7 @@ environment:
 
 1. **Change port** (optional) in `server.js`:
    ```javascript
-   const PORT = process.env.PORT || 3000;
+   const PORT = process.env.PORT || 5126;
    ```
 
 2. **Change session secret** in `server.js`:
@@ -398,7 +398,7 @@ server {
     server_name yourdomain.com;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:5126;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -440,10 +440,10 @@ sudo systemctl start qrepair
 
 ### Server won't start
 ```bash
-# Check if port 3000 is free
-netstat -ano | findstr :3000
+# Check if port 5126 is free
+netstat -ano | findstr :5126
 
-# Terminate process on port 3000 (Windows)
+# Terminate process on port 5126 (Windows)
 taskkill /F /PID <PID>
 
 # Reinstall dependencies
@@ -462,7 +462,7 @@ npm start
 
 ### Login errors
 - Verify credentials are correct
-- Check browser cookies (delete localhost:3000 cookies)
+- Check browser cookies (delete localhost:5126 cookies)
 - Verify express-session is installed: `npm list express-session`
 
 ### QR Code won't generate

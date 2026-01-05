@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 const QRDatabase = require('./database');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 5126;
 const SETTINGS_FILE = './settings.json';
 
 // Inizializza il database

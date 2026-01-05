@@ -11,8 +11,8 @@ RUN npm ci --only=production
 # Copia il resto del codice
 COPY . .
 
-# Esponi la porta 3000
-EXPOSE 3000
+# Esponi la porta 5126
+EXPOSE 5126
 
 # Crea directory per i dati persistenti
 RUN mkdir -p /app/data
