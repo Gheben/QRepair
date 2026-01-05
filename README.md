@@ -83,30 +83,31 @@ docker-compose up -d --build
 
 **Enable Demo Mode:**
 
-To run QRepair in demo mode, simply add the `DEMO_MODE` environment variable to your docker-compose.yml:
+To run QRepair in demo mode, uncomment the `DEMO_MODE` environment variable in your docker-compose.yml:
 
 ```yaml
-services:
-  qrepair:
-    build: .
-    ports:
-      - "5126:5126"
-    volumes:
-      - ./data:/app/data
-      - ./manutenzioni.db:/app/manutenzioni.db
-      - ./settings.json:/app/settings.json
-      - ./uploads:/app/uploads
-    environment:
-      - NODE_ENV=production
-      - PORT=5126
-      - DEMO_MODE=true  # Enables demo mode
-    restart: unless-stopped
+environment:
+  - NODE_ENV=production
+  - PORT=5126
+  - DEMO_MODE=true  # Uncomment this line to enable demo mode
 ```
 
-In demo mode:
-- Default user: `demo` / `demo` (credentials cannot be changed)
-- User management is disabled (cannot create, edit, or delete users)
-- All other features work normally
+Then restart the container:
+```bash
+docker-compose down
+docker-compose up -d
+```
+
+**Demo Mode Features:**
+- Creates a demo user with credentials: `demo` / `demo`
+- Demo user is created automatically only if the database is empty
+- User management is **completely disabled**:
+  - Cannot create new users
+  - Cannot edit existing users
+  - Cannot delete users
+  - Cannot change passwords
+- All other features (QR codes, maintenance, customers) work normally
+- Perfect for public demonstrations or testing without data modification risks
 
 ---
 
