@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Storico Manutenzioni</title>    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">    <link rel="stylesheet" href="style.css">
+    <title>Dashboard - Storico Manutenzioni</title>    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="api-client.js"></script>
     <style>
@@ -250,8 +251,10 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h1>📊 Dashboard Manutenzioni</h1>
                 <div style="display: flex; gap: 10px;">
+                    <a href="users" class="btn-small" style="background: #10b981; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600;">👥 Gestione Utenti</a>
                     <a href="settings" class="btn-small" style="background: #6c757d; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600;">⚙️ Impostazioni</a>
                     <a href="index" class="btn-small btn-export">← Torna al Generatore</a>
+                    <button onclick="logout()" class="btn-small" style="background: #ef4444; color: white;">🚪 Logout</button>
                 </div>
             </div>
             
@@ -275,12 +278,10 @@
                     <input type="text" id="search" placeholder="🔍 Cerca per nome, telefono, modello o S/N...">
                 </div>
                 <div class="export-buttons">
-                    <a href="users" class="btn-small" style="background: #10b981; color: white; text-decoration: none; display: inline-block;">👥 Gestione Utenti</a>
                     <button onclick="exportToCSV()" class="btn-small btn-export">📥 Esporta CSV</button>
                     <button onclick="exportToJSON()" class="btn-small btn-export">📥 Esporta JSON</button>
                     <button onclick="importData()" class="btn-small btn-import">📤 Importa</button>
                     <button onclick="clearAll()" class="btn-small btn-clear">🗑️ Cancella Tutto</button>
-                    <button onclick="logout()" class="btn-small" style="background: #ef4444; color: white;">🚪 Logout</button>
                 </div>
             </div>
             
