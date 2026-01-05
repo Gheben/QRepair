@@ -74,17 +74,22 @@ function migrateOldUrls() {
 }
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use(express.json({ limit: '5mb' })); // Limite per supportare immagini base64
 
 // Configura sessioni
 app.use(session({
-    secret: 'qrcode-manutenzioni-secret-key-2026',
+    secret: process.env.SESSION_SECRET || 'qrcode-manutenzioni-secret-key-2026',
     resave: false,
     saveUninitialized: false,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24, // 24 ore
-        httpOnly: true
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Abilita secure solo in produzione (HTTPS)
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     }
 }));
 
