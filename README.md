@@ -51,6 +51,12 @@
 git clone https://github.com/Gheben/QRepair.git
 cd QRepair
 
+# Create necessary directories and files
+mkdir -p /volume1/docker/QRepair/data
+mkdir -p /volume1/docker/QRepair/uploads
+touch /volume1/docker/QRepair/manutenzioni.db
+touch /volume1/docker/QRepair/settings.json
+
 # Start with Docker Compose
 docker-compose up -d
 
@@ -60,6 +66,8 @@ docker ps
 # View logs
 docker logs qrepair
 ```
+
+> **📁 Note**: If you're not using Synology NAS, adjust the volume paths in `docker-compose.yml` to match your system (e.g., `./data` for relative paths or `/opt/QRepair/data` for absolute paths).
 
 Access the application at `http://localhost:5126`
 
