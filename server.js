@@ -358,8 +358,6 @@ app.delete('/api/manutenzioni/:id', requireAuth, (req, res) => {
 app.get('/api/settings', (req, res) => {
     try {
         const settings = getSettings();
-        console.log('📄 GET /api/settings - Logo presente:', !!settings.logo);
-        console.log('📄 Logo lunghezza:', settings.logo ? settings.logo.length : 0);
         res.json({ success: true, data: settings });
     } catch (error) {
         console.error('Errore GET settings:', error);

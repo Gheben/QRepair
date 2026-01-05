@@ -9,6 +9,50 @@ class QRDatabase {
     }
 
     /**
+     * Genera un ID alfanumerico casuale di 16 caratteri
+     */
+    generateRandomId() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let id = '';
+        for (let i = 0; i < 16; i++) {
+            id += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return id;
+    }
+
+    /**
+     * Verifica se un ID esiste già
+     */
+    idExists(id) {
+        const stmt = this.db.prepare('SELECT COUNT(*) as count FROM manutenzioni WHERE id = ?');
+        stmt.bind([id]);
+        const result = [];
+        while (stmt.step()) {
+            const row = stmt.getAsObject();
+            result.push(row);
+        }
+        stmt.free();
+        return result[0]?.count > 0;
+    }
+
+    /**
+     * Genera un ID unico
+     */
+    generateUniqueId() {
+        let id = this.generateRandomId();
+        let attempts = 0;
+        // Rigenera se l'ID esiste già (molto improbabile)
+        while (this.idExists(id) && attempts < 10) {
+            id = this.generateRandomId();
+            attempts++;
+        }
+        if (attempts >= 10) {
+            throw new Error('Impossibile generare un ID unico');
+        }
+        return id;
+    }
+
+    /**
      * Inizializza il database
      */
     async init() {
@@ -122,6 +166,56 @@ class QRDatabase {
                 this.save();
                 console.log('✅ Colonna "client_id" aggiunta e popolata con successo');
             }
+            
+            // Migrazione ID da INTEGER a TEXT (alfanumerico)
+            // Verifica il tipo della colonna id
+            const idColumnInfo = tableInfo[0]?.values.find(v => v[1] === 'id');
+            const idType = idColumnInfo ? idColumnInfo[2] : null;
+            
+            if (idType === 'INTEGER') {
+                console.log('🔄 Migrazione ID da INTEGER a TEXT (mantenendo compatibilità QR esistenti)...');
+                
+                // Crea una nuova tabella con ID TEXT
+                this.db.run(`
+                    CREATE TABLE manutenzioni_new (
+                        id TEXT PRIMARY KEY,
+                        nome TEXT NOT NULL,
+                        tel TEXT NOT NULL,
+                        modello TEXT,
+                        serialNumber TEXT,
+                        data TEXT NOT NULL,
+                        dataCreazione TEXT NOT NULL,
+                        url TEXT NOT NULL,
+                        lingua TEXT DEFAULT 'it',
+                        scadenza TEXT,
+                        client_id INTEGER
+                    )
+                `);
+                
+                // Copia i dati mantenendo gli ID esistenti come stringhe
+                const oldData = this.db.exec("SELECT * FROM manutenzioni");
+                if (oldData && oldData[0]) {
+                    const columns = oldData[0].columns;
+                    const idIndex = columns.indexOf('id');
+                    
+                    for (const row of oldData[0].values) {
+                        // Mantieni l'ID esistente convertendolo in stringa
+                        const newRow = [...row];
+                        newRow[idIndex] = String(row[idIndex]);
+                        
+                        const placeholders = newRow.map(() => '?').join(', ');
+                        this.db.run(`INSERT INTO manutenzioni_new VALUES (${placeholders})`, newRow);
+                    }
+                }
+                
+                // Sostituisci la tabella vecchia con la nuova
+                this.db.run("DROP TABLE manutenzioni");
+                this.db.run("ALTER TABLE manutenzioni_new RENAME TO manutenzioni");
+                this.db.run('CREATE INDEX IF NOT EXISTS idx_client_id ON manutenzioni(client_id)');
+                
+                this.save();
+                console.log('✅ Migrazione ID completata con successo (ID esistenti preservati)');
+            }
         } catch (error) {
             console.error('Errore durante la migrazione:', error);
         }
@@ -133,7 +227,7 @@ class QRDatabase {
     createTables() {
         this.db.run(`
             CREATE TABLE IF NOT EXISTS manutenzioni (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id TEXT PRIMARY KEY,
                 nome TEXT NOT NULL,
                 tel TEXT NOT NULL,
                 modello TEXT,
@@ -192,12 +286,16 @@ class QRDatabase {
      * Aggiungi un record
      */
     add(data) {
+        // Genera un ID unico alfanumerico
+        const id = this.generateUniqueId();
+        
         const stmt = this.db.prepare(`
-            INSERT INTO manutenzioni (nome, tel, modello, serialNumber, data, dataCreazione, url, lingua, scadenza, client_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO manutenzioni (id, nome, tel, modello, serialNumber, data, dataCreazione, url, lingua, scadenza, client_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
         
         stmt.run([
+            id,
             data.nome,
             data.tel,
             data.modello || '',
@@ -211,11 +309,6 @@ class QRDatabase {
         ]);
         
         stmt.free();
-        
-        // Ottieni l'ID dell'ultimo inserimento
-        const result = this.db.exec('SELECT last_insert_rowid() as id');
-        const id = result[0].values[0][0];
-        
         this.save();
         return { id, ...data };
     }
