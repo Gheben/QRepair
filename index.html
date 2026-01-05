@@ -197,7 +197,7 @@
             }
             
             autocompleteList.innerHTML = matches.map(client => `
-                <div class="autocomplete-item" onclick="selectClient(${client.id})">
+                <div class="autocomplete-item" onclick="selectClient('${client.id}')">
                     <span class="autocomplete-client-name">${client.nome} ${client.cognome}</span>
                     <span class="autocomplete-client-tel">${client.tel}</span>
                 </div>

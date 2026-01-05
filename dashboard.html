@@ -506,9 +506,9 @@
                         <td>
                             <div class="action-buttons">
                                 ${flag}
-                                <button onclick="updateMaintenance(${actualIndex})" class="btn-action" style="background: transparent; color: #fbbf24; padding: 4px 8px; border: none; cursor: pointer; font-size: 18px;" title="Manutenzione eseguita">🔧</button>
-                                <button onclick="viewQR(${actualIndex})" class="btn-action btn-view" style="margin-left: auto;">👁️ Vedi QR</button>
-                                <button onclick="deleteRecord(${actualIndex})" class="btn-action btn-delete">🗑️</button>
+                                <button onclick="updateMaintenance('${record.id}')" class="btn-action" style="background: transparent; color: #fbbf24; padding: 4px 8px; border: none; cursor: pointer; font-size: 18px;" title="Manutenzione eseguita">🔧</button>
+                                <button onclick="viewQR('${record.id}')" class="btn-action btn-view" style="margin-left: auto;">👁️ Vedi QR</button>
+                                <button onclick="deleteRecord('${record.id}')" class="btn-action btn-delete">🗑️</button>
                             </div>
                         </td>
                     </tr>
@@ -533,8 +533,10 @@
             renderTable(filteredRecords);
         }
         
-        function viewQR(index) {
-            const record = filteredRecords[index];
+        function viewQR(recordId) {
+            const record = allRecords.find(r => r.id === recordId);
+            if (!record) return;
+            
             const modal = document.getElementById('qr-modal');
             const modalQR = document.getElementById('modal-qr');
             
@@ -584,11 +586,13 @@
             window.print();
         }
         
-        let currentMaintenanceIndex = null;
+        let currentMaintenanceId = null;
         
-        function updateMaintenance(index) {
-            const record = filteredRecords[index];
-            currentMaintenanceIndex = index;
+        function updateMaintenance(recordId) {
+            const record = allRecords.find(r => r.id === recordId);
+            if (!record) return;
+            
+            currentMaintenanceId = recordId;
             
             document.getElementById('update-cliente').value = record.nome;
             document.getElementById('update-modello').value = record.modello || '-';
@@ -610,13 +614,15 @@
         
         function closeMaintenanceModal() {
             document.getElementById('maintenance-modal').style.display = 'none';
-            currentMaintenanceIndex = null;
+            currentMaintenanceId = null;
         }
         
         async function saveMaintenanceUpdate() {
-            if (currentMaintenanceIndex === null) return;
+            if (currentMaintenanceId === null) return;
             
-            const record = filteredRecords[currentMaintenanceIndex];
+            const record = allRecords.find(r => r.id === currentMaintenanceId);
+            if (!record) return;
+            
             const newDataInput = document.getElementById('update-data').value;
             const newScadenzaInput = document.getElementById('update-scadenza').value;
             
@@ -668,12 +674,11 @@
             }
         }
         
-        async function deleteRecord(index) {
+        async function deleteRecord(recordId) {
             if (!confirm('Are you sure you want to delete this record?')) return;
             
             try {
-                const record = filteredRecords[index];
-                await api.delete(record.id);
+                await api.delete(recordId);
                 await loadRecords();
             } catch (error) {
                 console.error('Errore eliminazione:', error);
