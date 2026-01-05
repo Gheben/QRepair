@@ -56,11 +56,11 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:3000/api';
+        const API_BASE = '/api';
         let currentLogo = null;
         
         // Verifica autenticazione
-        fetch('http://localhost:3000/api/auth/check')
+        fetch('/api/auth/check')
             .then(res => res.json())
             .then(data => {
                 if (!data.authenticated) {

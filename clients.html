@@ -337,8 +337,8 @@
         async function loadData() {
             try {
                 const [clientsResponse, maintenancesResponse] = await Promise.all([
-                    fetch('http://localhost:3000/api/clienti'),
-                    fetch('http://localhost:3000/api/manutenzioni')
+                    fetch('/api/clienti'),
+                    fetch('/api/manutenzioni')
                 ]);
                 
                 const clientsData = await clientsResponse.json();
@@ -470,7 +470,7 @@
             }
             
             try {
-                const response = await fetch(`http://localhost:3000/api/clienti/${id}`, {
+                const response = await fetch(`/api/clienti/${id}`, {
                     method: 'DELETE'
                 });
                 
@@ -509,8 +509,8 @@
             
             try {
                 const url = id 
-                    ? `http://localhost:3000/api/clienti/${id}` 
-                    : 'http://localhost:3000/api/clienti';
+                    ? `/api/clienti/${id}` 
+                    : '/api/clienti';
                 
                 const method = id ? 'PUT' : 'POST';
                 
@@ -646,7 +646,7 @@
             try {
                 const record = allMaintenances.find(r => r.id === currentMaintenanceId);
                 
-                const response = await fetch(`http://localhost:3000/api/manutenzioni/${currentMaintenanceId}`, {
+                const response = await fetch(`/api/manutenzioni/${currentMaintenanceId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -677,7 +677,7 @@
             }
             
             try {
-                const response = await fetch(`http://localhost:3000/api/manutenzioni/${id}`, {
+                const response = await fetch(`/api/manutenzioni/${id}`, {
                     method: 'DELETE'
                 });
                 

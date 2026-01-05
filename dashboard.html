@@ -362,14 +362,14 @@
         let filteredRecords = [];
         
         // Verifica autenticazione
-        fetch('http://localhost:3000/api/auth/check')
+        fetch('/api/auth/check')
             .then(res => res.json())
             .then(data => {
                 if (!data.authenticated) {
                     window.location.href = '/login';
                 } else {
                     // Verifica connessione al server
-                    fetch('http://localhost:3000/api/count')
+                    fetch('/api/count')
                         .then(res => res.json())
                         .then(() => {
                             serverReady = true;
@@ -790,7 +790,7 @@
         // Funzione logout
         async function logout() {
             try {
-                await fetch('http://localhost:3000/api/auth/logout', { method: 'POST' });
+                await fetch('/api/auth/logout', { method: 'POST' });
                 window.location.href = '/login';
             } catch (error) {
                 console.error('Errore logout:', error);

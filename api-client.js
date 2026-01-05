@@ -2,7 +2,7 @@
  * API Client per comunicare con il server locale
  */
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = '/api';
 
 class APIClient {
     /**

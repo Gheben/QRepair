@@ -154,7 +154,7 @@
         // Carica clienti per autocomplete
         async function loadClients() {
             try {
-                const response = await fetch('http://localhost:3000/api/clienti');
+                const response = await fetch('/api/clienti');
                 const data = await response.json();
                 if (data.success) {
                     allClients = data.data;
@@ -239,7 +239,7 @@
         }
         
         // Verifica autenticazione
-        fetch('http://localhost:3000/api/auth/check')
+        fetch('/api/auth/check')
             .then(res => res.json())
             .then(data => {
                 if (!data.authenticated) {
@@ -255,7 +255,7 @@
         // Carica impostazioni fornitore
         async function loadFornitoreSetting() {
             try {
-                const response = await fetch('http://localhost:3000/api/settings');
+                const response = await fetch('/api/settings');
                 const result = await response.json();
                 if (result.success && result.data && result.data.nomeAzienda && result.data.telefono) {
                     fornitoreSetting = result.data;
@@ -268,7 +268,7 @@
         // Verifica connessione al server
         let serverReady = false;
         function checkServerConnection() {
-            fetch('http://localhost:3000/api/count')
+            fetch('/api/count')
                 .then(res => res.json())
                 .then(() => {
                     serverReady = true;
@@ -323,7 +323,7 @@
             // Se non c'è un cliente selezionato, cerca o crea
             if (!clientId) {
                 try {
-                    const clientExistsResponse = await fetch(`http://localhost:3000/api/clienti/search?q=${encodeURIComponent(telCliente)}`);
+                    const clientExistsResponse = await fetch(`/api/clienti/search?q=${encodeURIComponent(telCliente)}`);
                     const clientExistsData = await clientExistsResponse.json();
                     
                     if (clientExistsData.success && clientExistsData.data.length > 0) {
@@ -345,7 +345,7 @@
                             piva: null
                         };
                         
-                        const createClientResponse = await fetch('http://localhost:3000/api/clienti', {
+                        const createClientResponse = await fetch('/api/clienti', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(clientData)

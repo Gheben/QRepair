@@ -353,9 +353,15 @@ QRepair/
    git clone https://github.com/Gheben/QRepair.git
    cd QRepair
    
+   # Create required directories and files
+   mkdir -p data uploads
+   touch manutenzioni.db settings.json
+   
    # Start with Docker Compose
    docker-compose up -d
    ```
+
+   > **Note for Synology NAS**: The entrypoint script automatically creates directories inside the container, but Docker bind mounts require the host directories to exist first. The commands above create them before starting the container.
 
 3. **Configure reverse proxy** (optional but recommended)
    - Synology: Control Panel → Login Portal → Advanced → Reverse Proxy
