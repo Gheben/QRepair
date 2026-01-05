@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generatore QR Code Manutenzioni</title>    <link rel="icon" type="image/svg+xml" href="favicon.svg">    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+    <title>QR Code Maintenance Generator</title>    <link rel="icon" type="image/svg+xml" href="favicon.svg">    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="api-client.js"></script>
@@ -64,67 +64,67 @@
             <div style="text-align: right; margin-bottom: 10px;">
                 <a href="dashboard" class="link-dashboard">📊 Dashboard (<span id="counter">0</span>)</a>
             </div>
-            <h1>🔧 Generatore QR Code Manutenzioni</h1>
-            <p class="subtitle">Crea il tuo QR code personalizzato per i tuoi clienti</p>
+            <h1>🔧 QR Code Maintenance Generator</h1>
+            <p class="subtitle">Create your personalized QR code for your customers</p>
             
             <form id="form-qr">
                 <div class="form-group autocomplete-container">
-                    <label for="nome">Nome Cliente</label>
-                    <input type="text" id="nome" name="nome" required placeholder="es. Mario Rossi" autocomplete="off">
+                    <label for="nome">Customer Name</label>
+                    <input type="text" id="nome" name="nome" required placeholder="e.g. Mario Rossi" autocomplete="off">
                     <div id="autocomplete-list" class="autocomplete-list"></div>
                 </div>
 
                 <div class="form-group">
-                    <label for="tel">Telefono Cliente</label>
-                    <input type="tel" id="tel" name="tel" required placeholder="es. 3331234567">
-                    <small style="color: #666;">Questi dati sono per la tua gestione interna</small>
+                    <label for="tel">Customer Phone</label>
+                    <input type="tel" id="tel" name="tel" required placeholder="e.g. 3331234567">
+                    <small style="color: #666;">This data is for your internal management</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="modello">Modello Dispositivo</label>
-                    <input type="text" id="modello" name="modello" placeholder="es. Baxi Luna 3 Comfort">
+                    <label for="modello">Device Model</label>
+                    <input type="text" id="modello" name="modello" placeholder="e.g. Baxi Luna 3 Comfort">
                 </div>
 
                 <div class="form-group">
                     <label for="serialNumber">Serial Number (S/N)</label>
-                    <input type="text" id="serialNumber" name="serialNumber" placeholder="es. SN123456789">
+                    <input type="text" id="serialNumber" name="serialNumber" placeholder="e.g. SN123456789">
                 </div>
 
                 <div class="form-group">
-                    <label for="lingua">Lingua del QR Code</label>
+                    <label for="lingua">QR Code Language</label>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <select id="lingua" name="lingua" required style="flex: 1;">
-                            <option value="it">Italiano</option>
-                            <option value="en">Inglese</option>
-                            <option value="de">Tedesco</option>
+                            <option value="it">Italian</option>
+                            <option value="en">English</option>
+                            <option value="de">German</option>
                         </select>
                         <span id="flag-preview" class="fi fi-it" style="font-size: 32px;"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="data">Data Ultima Manutenzione</label>
+                    <label for="data">Last Maintenance Date</label>
                     <input type="date" id="data" name="data" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="scadenza">Prossima Scadenza Manutenzione</label>
+                    <label for="scadenza">Next Maintenance Due Date</label>
                     <input type="date" id="scadenza" name="scadenza" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary">🎯 GENERA QR CODE</button>
+                <button type="submit" class="btn btn-primary">🎯 GENERATE QR CODE</button>
             </form>
 
             <div id="result" style="display: none;">
                 <hr>
-                <h2>✅ QR Code Generato!</h2>
-                <p class="info-text">Stampa questo QR code e applicalo sul dispositivo del cliente</p>
+                <h2>✅ QR Code Generated!</h2>
+                <p class="info-text">Print this QR code and apply it to the customer's device</p>
                 
                 <div id="qrcode"></div>
                 
                 <div class="actions">
-                    <button onclick="window.print()" class="btn btn-print">🖨️ Stampa</button>
-                    <button onclick="resetForm()" class="btn btn-secondary">🔄 Genera Nuovo</button>
+                    <button onclick="window.print()" class="btn btn-print">🖨️ Print</button>
+                    <button onclick="resetForm()" class="btn btn-secondary">🔄 Generate New</button>
                 </div>
             </div>
             
@@ -135,7 +135,7 @@
                     <a href="https://buymeacoffee.com/guidoballau" target="_blank" style="margin: 0 8px; text-decoration: none; color: #FFDD00;" title="Buy Me a Coffee">☕ Donazione</a>
                     <a href="https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN" target="_blank" style="margin: 0 8px; text-decoration: none; color: #0070BA;" title="PayPal">💳 PayPal</a>
                 </p>
-                <p style="margin-bottom: 0;">&copy; 2026 - Tutti i diritti riservati</p>
+                <p style="margin-bottom: 0;">&copy; 2026 - All rights reserved</p>
             </footer>
         </div>
     </div>

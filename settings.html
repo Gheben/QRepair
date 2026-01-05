@@ -3,44 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Impostazioni Fornitore</title>    <link rel="icon" type="image/svg+xml" href="favicon.svg">    <link rel="stylesheet" href="style.css">
+    <title>Provider Settings</title>    <link rel="icon" type="image/svg+xml" href="favicon.svg">    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <h1>⚙️ Impostazioni Fornitore</h1>
-            <p class="info-text">Inserisci i tuoi dati aziendali. Questi verranno mostrati ai clienti quando scansionano il QR code.</p>
+            <h1>⚙️ Provider Settings</h1>
+            <p class="info-text">Enter your company details. These will be shown to customers when they scan the QR code.</p>
             
             <form id="settings-form">
                 <div class="form-group">
-                    <label for="nomeAzienda">Nome Azienda/Fornitore</label>
-                    <input type="text" id="nomeAzienda" name="nomeAzienda" required placeholder="es. GB Service">
+                    <label for="nomeAzienda">Company/Provider Name</label>
+                    <input type="text" id="nomeAzienda" name="nomeAzienda" required placeholder="e.g. GB Service">
                 </div>
 
                 <div class="form-group">
-                    <label for="telefono">Numero di Telefono</label>
-                    <input type="tel" id="telefono" name="telefono" required placeholder="es. 3331234567" pattern="[0-9]{9,10}">
-                    <small style="color: #666;">Solo numeri, senza prefisso +39</small>
+                    <label for="telefono">Phone Number</label>
+                    <input type="tel" id="telefono" name="telefono" required placeholder="e.g. 3331234567" pattern="[0-9]{9,10}">
+                    <small style="color: #666;">Numbers only, without +39 prefix</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="logo">Logo Aziendale (opzionale)</label>
+                    <label for="logo">Company Logo (optional)</label>
                     <input type="file" id="logo" name="logo" accept="image/*" style="padding: 10px;">
-                    <small style="color: #666;">Il logo verrà mostrato nella pagina del QR code. Dimensione massima: 5MB</small>
+                    <small style="color: #666;">The logo will be displayed on the QR code page. Maximum size: 5MB</small>
                     <div id="logo-preview" style="margin-top: 10px; display: none;">
                         <img id="logo-img" src="" alt="Logo" style="max-width: 80px; max-height: 80px; border-radius: 10px; border: 2px solid #e0e0e0;">
-                        <button type="button" onclick="removeLogo()" style="margin-left: 10px; padding: 5px 10px; background: #f5576c; color: white; border: none; border-radius: 5px; cursor: pointer;">🗑️ Rimuovi</button>
+                        <button type="button" onclick="removeLogo()" style="margin-left: 10px; padding: 5px 10px; background: #f5576c; color: white; border: none; border-radius: 5px; cursor: pointer;">🗑️ Remove</button>
                     </div>
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1;">💾 SALVA IMPOSTAZIONI</button>
-                    <a href="dashboard" class="btn" style="flex: 1; text-align: center; text-decoration: none; background: #6c757d;">↩️ Torna alla Dashboard</a>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">💾 SAVE SETTINGS</button>
+                    <a href="dashboard" class="btn" style="flex: 1; text-align: center; text-decoration: none; background: #6c757d;">↩️ Back to Dashboard</a>
                 </div>
             </form>
 
             <div id="success-message" style="display: none; margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 10px; color: #155724;">
-                ✅ Impostazioni salvate con successo!
+                ✅ Settings saved successfully!
             </div>
             
             <footer>
@@ -50,7 +50,7 @@
                     <a href="https://buymeacoffee.com/guidoballau" target="_blank" style="margin: 0 8px; text-decoration: none; color: #FFDD00;" title="Buy Me a Coffee">☕ Donazione</a>
                     <a href="https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN" target="_blank" style="margin: 0 8px; text-decoration: none; color: #0070BA;" title="PayPal">💳 PayPal</a>
                 </p>
-                <p style="margin-bottom: 0;">&copy; 2026 - Tutti i diritti riservati</p>
+                <p style="margin-bottom: 0;">&copy; 2026 - All rights reserved</p>
             </footer>
         </div>
     </div>
@@ -166,13 +166,12 @@
                         successMsg.style.display = 'none';
                     }, 3000);
                 } else {
-                    alert('Errore nel salvataggio: ' + result.error);
+                    alert('Save error: ' + result.error);
                 }
             } catch (error) {
                 console.error('Errore salvataggio:', error);
-                alert('Errore nel salvataggio delle impostazioni');
+                alert('Error saving settings');
             }
         });
     </script>
-</body>
-</html>
+

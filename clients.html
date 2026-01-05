@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Clienti - QR Code Manutenzioni</title>
+    <title>Customer Management - QR Code Maintenance</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <link rel="stylesheet" href="style.css">
@@ -199,15 +199,15 @@
 <body>
     <div class="container" style="max-width: 1200px;">
         <div class="card">
-            <h1>👥 Gestione Clienti</h1>
+            <h1>👥 Customer Management</h1>
             
             <div class="header-buttons">
-                <a href="dashboard" class="btn-small btn-back">← Torna alla Dashboard</a>
-                <button onclick="showCreateClientModal()" class="btn-small btn-create">➕ Crea Nuovo Cliente</button>
+                <a href="dashboard" class="btn-small btn-back">← Back to Dashboard</a>
+                <button onclick="showCreateClientModal()" class="btn-small btn-create">➕ Create New Customer</button>
             </div>
             
             <div class="search-box">
-                <input type="text" id="search" placeholder="🔍 Cerca per nome, cognome o telefono...">
+                <input type="text" id="search" placeholder="🔍 Search by name, surname or phone...">
             </div>
             
             <div id="clients-container"></div>
@@ -219,7 +219,7 @@
                     <a href="https://buymeacoffee.com/guidoballau" target="_blank" style="margin: 0 8px; text-decoration: none; color: #FFDD00;" title="Buy Me a Coffee">☕ Donazione</a>
                     <a href="https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN" target="_blank" style="margin: 0 8px; text-decoration: none; color: #0070BA;" title="PayPal">💳 PayPal</a>
                 </p>
-                <p style="margin-bottom: 0;">&copy; 2026 - Tutti i diritti riservati</p>
+                <p style="margin-bottom: 0;">&copy; 2026 - All rights reserved</p>
             </footer>
         </div>
     </div>
@@ -228,25 +228,25 @@
     <div id="client-modal" class="modal">
         <div class="modal-content" style="max-width: 700px;">
             <span class="close" onclick="closeClientModal()">&times;</span>
-            <h2 id="modal-title">➕ Nuovo Cliente</h2>
+            <h2 id="modal-title">➕ New Customer</h2>
             <form id="clientForm">
                 <input type="hidden" id="client-id">
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label>Nome: <span style="color: red;">*</span></label>
+                        <label>First Name: <span style="color: red;">*</span></label>
                         <input type="text" id="client-nome" required>
                     </div>
                     
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label>Cognome: <span style="color: red;">*</span></label>
+                        <label>Last Name: <span style="color: red;">*</span></label>
                         <input type="text" id="client-cognome" required>
                     </div>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label>Numero Cellulare: <span style="color: red;">*</span></label>
+                        <label>Mobile Number: <span style="color: red;">*</span></label>
                         <input type="tel" id="client-tel" required placeholder="+39 ...">
                         <small>Formato: +39 3331234567</small>
                     </div>
@@ -356,7 +356,7 @@
                 renderClients();
             } catch (error) {
                 console.error('Errore caricamento dati:', error);
-                alert('❌ Errore durante il caricamento dei dati');
+                alert('❌ Error loading data');
             }
         }
         
@@ -380,7 +380,7 @@
             const container = document.getElementById('clients-container');
             
             if (filteredClients.length === 0) {
-                container.innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Nessun cliente trovato</p>';
+                container.innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">No customers found</p>';
                 return;
             }
             
@@ -390,14 +390,14 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Nome Completo</th>
-                            <th>Telefono</th>
+                            <th>Full Name</th>
+                            <th>Phone</th>
                             <th>Email</th>
-                            <th>Lingua</th>
-                            <th>P.IVA</th>
-                            <th>Manutenzioni</th>
-                            <th>Ultima Manutenzione</th>
-                            <th>Azioni</th>
+                            <th>Language</th>
+                            <th>VAT Number</th>
+                            <th>Maintenances</th>
+                            <th>Last Maintenance</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -422,7 +422,7 @@
                         <td>${lastDate}</td>
                         <td>
                             <div class="action-buttons">
-                                ${maintenanceCount > 0 ? `<button onclick="viewMaintenances(${client.id})" class="btn-action btn-view">👁️ Manutenzioni</button>` : ''}
+                                ${maintenanceCount > 0 ? `<button onclick="viewMaintenances(${client.id})" class="btn-action btn-view">👁️ Maintenances</button>` : ''}
                                 <button onclick="editClient(${client.id})" class="btn-action btn-edit">✏️</button>
                                 <button onclick="deleteClient(${client.id}, '${fullName}')" class="btn-action btn-delete">🗑️</button>
                             </div>
@@ -441,7 +441,7 @@
         
         // Mostra modal crea cliente
         function showCreateClientModal() {
-            document.getElementById('modal-title').textContent = '➕ Nuovo Cliente';
+            document.getElementById('modal-title').textContent = '➕ New Customer';
             document.getElementById('client-id').value = '';
             document.getElementById('clientForm').reset();
             document.getElementById('client-modal').classList.add('active');
@@ -452,7 +452,7 @@
             const client = allClients.find(c => c.id === id);
             if (!client) return;
             
-            document.getElementById('modal-title').textContent = '✏️ Modifica Cliente';
+            document.getElementById('modal-title').textContent = '✏️ Edit Customer';
             document.getElementById('client-id').value = id;
             document.getElementById('client-nome').value = client.nome;
             document.getElementById('client-cognome').value = client.cognome;
@@ -465,7 +465,7 @@
         
         // Elimina cliente
         async function deleteClient(id, name) {
-            if (!confirm(`Sei sicuro di voler eliminare il cliente "${name}"?\n\nAttenzione: le manutenzioni associate rimarranno nel sistema.`)) {
+            if (!confirm(`Are you sure you want to delete the customer "${name}"?\n\nWarning: associated maintenances will remain in the system.`)) {
                 return;
             }
             
@@ -477,14 +477,14 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert('✅ Cliente eliminato!');
+                    alert('✅ Customer deleted!');
                     loadData();
                 } else {
                     alert('❌ ' + result.error);
                 }
             } catch (error) {
                 console.error('Errore:', error);
-                alert('❌ Errore durante l\'eliminazione');
+                alert('❌ Error during deletion');
             }
         }
         
@@ -523,7 +523,7 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert(id ? '✅ Cliente aggiornato!' : '✅ Cliente creato!');
+                    alert(id ? '✅ Customer updated!' : '✅ Customer created!');
                     closeClientModal();
                     loadData();
                 } else {
@@ -531,7 +531,7 @@
                 }
             } catch (error) {
                 console.error('Errore:', error);
-                alert('❌ Errore durante il salvataggio');
+                alert('❌ Error during save');
             }
         });
         
@@ -548,7 +548,7 @@
                 new Date(b.data) - new Date(a.data)
             );
             
-            let html = '<table style="margin-top: 20px;"><thead><tr><th>Data</th><th>Modello</th><th>S/N</th><th>Scadenza</th><th>Azioni</th></tr></thead><tbody>';
+            let html = '<table style="margin-top: 20px;"><thead><tr><th>Date</th><th>Model</th><th>S/N</th><th>Due Date</th><th>Actions</th></tr></thead><tbody>';
             
             sorted.forEach(m => {
                 const dataFormat = new Date(m.data).toLocaleDateString('it-IT');
@@ -630,12 +630,12 @@
             const scadenza = document.getElementById('update-scadenza').value;
             
             if (!data || !scadenza) {
-                alert('⚠️ Compila tutti i campi obbligatori');
+                alert('⚠️ Fill in all required fields');
                 return;
             }
             
-            if (new Date(scadenza) <= new Date(data)) {
-                alert('⚠️ La data di scadenza deve essere successiva alla data di manutenzione');
+            if (new Date(newScadenza) <= new Date(newData)) {
+                alert('⚠️ The due date must be after the maintenance date');
                 return;
             }
             
@@ -660,19 +660,19 @@
                     closeMaintenanceModal();
                     closeMaintenancesModal();
                     loadData();
-                    alert('✅ Manutenzione aggiornata!');
+                    alert('✅ Maintenance updated!');
                 } else {
-                    alert('❌ Errore durante l\'aggiornamento');
+                    alert('❌ Error during update');
                 }
             } catch (error) {
                 console.error('Errore:', error);
-                alert('❌ Errore durante l\'aggiornamento');
+                alert('❌ Error during update');
             }
         }
         
         // Elimina manutenzione
         async function deleteMaintenance(id, modello) {
-            if (!confirm(`Sei sicuro di voler eliminare la manutenzione "${modello}"?\n\nQuesta azione non può essere annullata.`)) {
+            if (!confirm(`Are you sure you want to delete the maintenance "${modello}"?\n\nThis action cannot be undone.`)) {
                 return;
             }
             
@@ -682,15 +682,15 @@
                 });
                 
                 if (response.ok) {
-                    alert('✅ Manutenzione eliminata!');
+                    alert('✅ Maintenance deleted!');
                     closeMaintenancesModal();
                     await loadData();
                 } else {
-                    alert('❌ Errore durante l\'eliminazione');
+                    alert('❌ Error during deletion');
                 }
             } catch (error) {
                 console.error('Errore:', error);
-                alert('❌ Errore durante l\'eliminazione');
+                alert('❌ Error during deletion');
             }
         }
         

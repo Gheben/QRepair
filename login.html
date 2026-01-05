@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - QR Code Manutenzioni</title>
+    <title>Login - QR Code Maintenance</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -100,8 +100,8 @@
         <div class="login-card">
             <div class="login-header">
                 <div class="login-icon">🔐</div>
-                <h1>Area Riservata</h1>
-                <p style="color: #666;">Accedi per gestire i QR Code</p>
+                <h1>Reserved Area</h1>
+                <p style="color: #666;">Login to manage QR Codes</p>
             </div>
             
             <div id="error" class="error-message"></div>
@@ -117,7 +117,7 @@
                     <input type="password" id="password" name="password" required>
                 </div>
                 
-                <button type="submit" class="btn-login" id="loginBtn">🚀 ACCEDI</button>
+                <button type="submit" class="btn-login" id="loginBtn">🚀 LOGIN</button>
             </form>
             
             <footer style="margin-top: 30px; text-align: center; color: #999; font-size: 14px;">
@@ -127,7 +127,7 @@
                     <a href="https://buymeacoffee.com/guidoballau" target="_blank" style="margin: 0 8px; text-decoration: none; color: #FFDD00;" title="Buy Me a Coffee">☕ Donazione</a>
                     <a href="https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN" target="_blank" style="margin: 0 8px; text-decoration: none; color: #0070BA;" title="PayPal">💳 PayPal</a>
                 </p>
-                <p style="margin-bottom: 0;">&copy; 2026 - QR Code Manutenzioni</p>
+                <p style="margin-bottom: 0;">&copy; 2026 - QR Code Maintenance</p>
             </footer>
         </div>
     </div>
@@ -145,7 +145,7 @@
             
             errorDiv.style.display = 'none';
             loginBtn.disabled = true;
-            loginBtn.textContent = '⏳ Accesso in corso...';
+            loginBtn.textContent = '⏳ Logging in...';
             
             try {
                 const response = await fetch('/api/auth/login', {
@@ -159,16 +159,16 @@
                 if (data.success) {
                     window.location.href = '/dashboard';
                 } else {
-                    errorDiv.textContent = '❌ ' + (data.error || 'Credenziali non valide');
+                    errorDiv.textContent = '❌ ' + (data.error || 'Invalid credentials');
                     errorDiv.style.display = 'block';
                     loginBtn.disabled = false;
-                    loginBtn.textContent = '🚀 ACCEDI';
+                    loginBtn.textContent = '🚀 LOGIN';
                 }
             } catch (error) {
-                errorDiv.textContent = '❌ Errore di connessione al server';
+                errorDiv.textContent = '❌ Connection error';
                 errorDiv.style.display = 'block';
                 loginBtn.disabled = false;
-                loginBtn.textContent = '🚀 ACCEDI';
+                loginBtn.textContent = '🚀 LOGIN';
             }
         });
     </script>

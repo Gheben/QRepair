@@ -1,4 +1,4 @@
-# QRepair - Sistema di Gestione Manutenzioni con QR Code
+# QRepair - Maintenance Management System with QR Code
 
 <div align="center">
 
@@ -16,202 +16,202 @@
 
 ---
 
-## 📋 Descrizione
+## 📋 Description
 
-**QRepair** è un sistema completo per la gestione delle manutenzioni di dispositivi attraverso QR Code. Ideale per aziende di assistenza tecnica, manutentori e service provider che vogliono digitalizzare e semplificare il tracciamento degli interventi di manutenzione.
+**QRepair** is a complete system for managing device maintenance through QR Codes. Ideal for technical assistance companies, maintenance providers, and service providers who want to digitize and simplify maintenance intervention tracking.
 
-### ✨ Caratteristiche Principali
+### ✨ Key Features
 
-- 🔐 **Sistema di Autenticazione** - Login sicuro con gestione utenti e sessioni
-- 📱 **Generazione QR Code** - Crea QR code univoci per ogni dispositivo
-- 📊 **Dashboard Completa** - Visualizza, cerca e gestisci tutte le manutenzioni
-- 🌍 **Multilingua** - Supporto per Italiano, Inglese e Tedesco
-- 📅 **Gestione Scadenze** - Monitoraggio automatico delle date di scadenza
-- 💬 **Integrazione WhatsApp** - Invio messaggi diretti ai clienti
-- 📥 **Export/Import** - Esportazione in CSV e JSON
-- 👥 **Gestione Utenti** - Amministrazione completa degli accessi
-- 🔄 **Database Persistente** - Salvataggio automatico su SQLite
+- 🔐 **Authentication System** - Secure login with user and session management
+- 📱 **QR Code Generation** - Create unique QR codes for each device
+- 📊 **Complete Dashboard** - View, search, and manage all maintenances
+- 🌍 **Multilingual** - Support for Italian, English, and German
+- 📅 **Due Date Management** - Automatic expiration date monitoring
+- 💬 **WhatsApp Integration** - Direct messaging to customers
+- 📥 **Export/Import** - Export to CSV and JSON
+- 👥 **User Management** - Complete access administration
+- 🔄 **Persistent Database** - Automatic saving on SQLite
 
 ---
 
-## 🚀 Installazione
+## 🚀 Installation
 
-### Prerequisiti
+### Prerequisites
 
-- **Node.js** (v14 o superiore) - [Download](https://nodejs.org/)
-- **npm** (incluso con Node.js)
-- Browser moderno (Chrome, Firefox, Edge, Safari)
+- **Node.js** (v14 or higher) - [Download](https://nodejs.org/)
+- **npm** (included with Node.js)
+- Modern browser (Chrome, Firefox, Edge, Safari)
 
-### Passaggi di Installazione
+### Installation Steps
 
-1. **Clona il repository**
+1. **Clone the repository**
    ```bash
    git clone https://github.com/Gheben/QRepair.git
    cd QRepair
    ```
 
-2. **Installa le dipendenze**
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Avvia il server**
+3. **Start the server**
    ```bash
    npm start
    ```
 
-4. **Apri il browser**
+4. **Open your browser**
    ```
    http://localhost:3000/login
    ```
 
 ---
 
-## 🔑 Primo Accesso
+## 🔑 First Access
 
-Al primo avvio, il sistema crea automaticamente un utente amministratore:
+On first startup, the system automatically creates an administrator user:
 
 - **Username**: `admin`
 - **Password**: `admin`
 
-> ⚠️ **IMPORTANTE**: Cambia immediatamente la password dopo il primo accesso!
+> ⚠️ **IMPORTANT**: Change the password immediately after first login!
 
 ---
 
-## 📖 Guida all'Utilizzo
+## 📖 User Guide
 
-### 📸 Panoramica Interfacce
+### 📸 Interface Overview
 
-#### Dashboard Principale
-![Dashboard Principale](screenshot/Dashboard%20Principale.png)
-*Vista principale con statistiche, ricerca e gestione manutenzioni*
+#### Main Dashboard
+![Main Dashboard](screenshot/Dashboard%20Principale.png)
+*Main view with statistics, search, and maintenance management*
 
-#### Generazione QR Code
-![Generazione QR](screenshot/Generazione%20QR.png)
-*Form per la creazione di nuovi QR code per i dispositivi*
+#### QR Code Generation
+![QR Generation](screenshot/Generazione%20QR.png)
+*Form for creating new QR codes for devices*
 
-#### Dashboard Clienti
-![Dashboard Clienti](screenshot/Dashboard%20Clienti.png)
-*Gestione completa dei clienti con rubrica e storico manutenzioni*
+#### Customer Dashboard
+![Customer Dashboard](screenshot/Dashboard%20Clienti.png)
+*Complete customer management with address book and maintenance history*
 
-#### Visualizzazione QR Cliente
-![QR Cliente](screenshot/QR%20Cliente.png)
-*Pagina pubblica visualizzata dai clienti scansionando il QR code*
+#### Customer QR View
+![Customer QR](screenshot/QR%20Cliente.png)
+*Public page displayed to customers when scanning the QR code*
 
-#### Gestione Utenti
-![Gestione Utenti](screenshot/Gestione%20Utenti.png)
-*Amministrazione utenti del sistema*
+#### User Management
+![User Management](screenshot/Gestione%20Utenti.png)
+*System user administration*
 
-#### Impostazioni Fornitore
-![Impostazioni Fornitore](screenshot/Impostazioni%20Fornitore.png)
-*Configurazione dati aziendali, logo e contatti*
+#### Provider Settings
+![Provider Settings](screenshot/Impostazioni%20Fornitore.png)
+*Configuration of company data, logo, and contacts*
 
 ---
 
 ### 1. Login
 
-1. Apri `http://localhost:3000/login`
-2. Inserisci le credenziali di accesso
-3. Clicca su "Accedi"
+1. Open `http://localhost:3000/login`
+2. Enter your credentials
+3. Click "Login"
 
-### 2. Configurazione Iniziale (Settings)
+### 2. Initial Setup (Settings)
 
-Prima di creare QR code, configura i dati della tua azienda:
+Before creating QR codes, configure your company data:
 
-1. Vai su `http://localhost:3000/settings`
-2. Inserisci:
-   - **Nome Azienda** (es. "GB Service")
-   - **Numero Telefono** (es. "+39 333 1234567")
-   - **Logo Aziendale** (opzionale, max 5MB, formato PNG consigliato per trasparenza)
-3. Clicca su "💾 Salva Impostazioni"
+1. Go to `http://localhost:3000/settings`
+2. Enter:
+   - **Company Name** (e.g., "GB Service")
+   - **Phone Number** (e.g., "+39 333 1234567")
+   - **Company Logo** (optional, max 5MB, PNG format recommended for transparency)
+3. Click "💾 Save Settings"
 
-### 3. Creazione QR Code
+### 3. QR Code Creation
 
-1. Vai su `http://localhost:3000` (pagina di creazione)
-2. Compila il form:
-   - **Nome Cliente** *(obbligatorio)*
-   - **Telefono Cliente** *(obbligatorio)*
-   - **Modello Dispositivo** (es. "iPhone 13")
-   - **Numero Seriale (S/N)** (es. "ABC123456")
-   - **Data Manutenzione** *(obbligatorio)*
-   - **Data Scadenza** (per garantia/prossima revisione)
-   - **Lingua** (IT/EN/DE)
-3. Clicca su "🎨 Genera QR Code"
-4. Il QR code viene generato e salvato automaticamente
-5. Scarica il QR code come PNG
+1. Go to `http://localhost:3000` (creation page)
+2. Fill in the form:
+   - **Customer Name** *(required)*
+   - **Customer Phone** *(required)*
+   - **Device Model** (e.g., "iPhone 13")
+   - **Serial Number (S/N)** (e.g., "ABC123456")
+   - **Maintenance Date** *(required)*
+   - **Due Date** (for warranty/next service)
+   - **Language** (IT/EN/DE)
+3. Click "🎨 Generate QR Code"
+4. The QR code is generated and automatically saved
+5. Download the QR code as PNG
 
-### 4. Dashboard - Gestione Manutenzioni
+### 4. Dashboard - Maintenance Management
 
-Accedi alla dashboard su `http://localhost:3000/dashboard`:
+Access the dashboard at `http://localhost:3000/dashboard`:
 
-#### Funzionalità:
-- **📊 Statistiche**: Totale record, manutenzioni del mese, clienti unici
-- **🔍 Ricerca**: Cerca per nome, telefono, modello o numero seriale
-- **👁️ Visualizza QR**: Visualizza e stampa il QR code di ogni record
-- **✏️ Modifica**: Aggiorna i dati delle manutenzioni
-- **🔄 Aggiorna Manutenzione**: Registra nuove manutenzioni per lo stesso dispositivo
-- **🗑️ Elimina**: Rimuovi singoli record
-- **📥 Export CSV/JSON**: Esporta tutti i dati
-- **📤 Import**: Importa dati da file JSON
-- **🗑️ Cancella Tutto**: Rimuovi tutti i record (richiede conferma)
+#### Features:
+- **📊 Statistics**: Total records, monthly maintenances, unique customers
+- **🔍 Search**: Search by name, phone, model, or serial number
+- **👁️ View QR**: Display and print the QR code for each record
+- **✏️ Edit**: Update maintenance data
+- **🔄 Update Maintenance**: Record new maintenances for the same device
+- **🗑️ Delete**: Remove individual records
+- **📥 Export CSV/JSON**: Export all data
+- **📤 Import**: Import data from JSON file
+- **🗑️ Delete All**: Remove all records (requires confirmation)
 
-### 5. Pagina Info (Pubblica)
+### 5. Info Page (Public)
 
-Quando un cliente scansiona il QR code, accede automaticamente a `http://localhost:3000/info?id=XXX`:
+When a customer scans the QR code, they automatically access `http://localhost:3000/info?id=XXX`:
 
-**Informazioni Visualizzate:**
-- 🏢 Nome Azienda e Logo
-- 📞 Telefono Azienda
-- 👤 Nome Cliente
-- 📱 Telefono Cliente (con pulsante chiamata diretta)
-- 🔧 Modello Dispositivo
-- 🔢 Numero Seriale
-- 📅 Data Ultima Manutenzione
-- ⏰ Data Scadenza (con indicatore colore)
-- 💬 Pulsante "Invia Messaggio WhatsApp"
+**Information Displayed:**
+- 🏢 Company Name and Logo
+- 📞 Company Phone
+- 👤 Customer Name
+- 📱 Customer Phone (with direct call button)
+- 🔧 Device Model
+- 🔢 Serial Number
+- 📅 Last Maintenance Date
+- ⏰ Due Date (with color indicator)
+- 💬 "Send WhatsApp Message" button
 
-**Indicatori Scadenza:**
-- 🟢 Verde: Scadenza futura
-- 🔴 Rosso: Scadenza passata
-- ⚪ Grigio: Nessuna scadenza impostata
+**Due Date Indicators:**
+- 🟢 Green: Future due date
+- 🔴 Red: Past due date
+- ⚪ Gray: No due date set
 
-### 6. Gestione Utenti
+### 6. User Management
 
-Accedi a `http://localhost:3000/users` dalla Dashboard:
+Access `http://localhost:3000/users` from the Dashboard:
 
-#### Operazioni Disponibili:
-- **➕ Crea Nuovo Utente**: Username, Password, Nome completo
-- **✏️ Modifica Utente**: Aggiorna dati (lascia password vuota per non modificarla)
-- **🗑️ Elimina Utente**: Rimuovi utente (minimo 1 utente richiesto)
+#### Available Operations:
+- **➕ Create New User**: Username, Password, Full name
+- **✏️ Edit User**: Update data (leave password blank to keep it unchanged)
+- **🗑️ Delete User**: Remove user (minimum 1 user required)
 
-> 💡 **Nota**: Non puoi eliminare l'ultimo utente del sistema
+> 💡 **Note**: You cannot delete the last user in the system
 
 ### 7. Logout
 
-Clicca su "🚪 Logout" nella Dashboard per uscire in sicurezza.
+Click "🚪 Logout" in the Dashboard to safely exit.
 
 ---
 
-## 🗂️ Struttura del Progetto
+## 🗂️ Project Structure
 
 ```
 QRepair/
-├── server.js              # Server Express principale
-├── database.js            # Gestione database SQLite
-├── db.js                  # Wrapper database (legacy)
-├── api-client.js          # Client API per il frontend
-├── package.json           # Dipendenze Node.js
-├── settings.json          # Impostazioni azienda (generato automaticamente)
-├── manutenzioni.db        # Database SQLite (generato automaticamente)
+├── server.js              # Main Express server
+├── database.js            # SQLite database management
+├── db.js                  # Database wrapper (legacy)
+├── api-client.js          # API client for frontend
+├── package.json           # Node.js dependencies
+├── settings.json          # Company settings (auto-generated)
+├── manutenzioni.db        # SQLite database (auto-generated)
 │
-├── login.html             # Pagina di login
-├── index.html             # Generazione QR Code
-├── dashboard.html         # Dashboard gestionale
-├── info.html              # Pagina pubblica QR Code
-├── settings.html          # Configurazione azienda
-├── users.html             # Gestione utenti
+├── login.html             # Login page
+├── index.html             # QR Code generation
+├── dashboard.html         # Management dashboard
+├── info.html              # Public QR Code page
+├── settings.html          # Company configuration
+├── users.html             # User management
 │
-└── style.css              # Stili globali
+└── style.css              # Global styles
 ```
 
 ---
@@ -219,94 +219,94 @@ QRepair/
 ## 🔧 Tecnologie Utilizzate
 
 ### Backend
-- **Node.js** - Runtime JavaScript
-- **Express** - Framework web
-- **sql.js** - Database SQLite in-memory
-- **bcrypt** - Hash delle password
-- **express-session** - Gestione sessioni
+- **Node.js** - JavaScript runtime
+- **Express** - Web framework
+- **sql.js** - In-memory SQLite database
+- **bcrypt** - Password hashing
+- **express-session** - Session management
 - **CORS** - Cross-Origin Resource Sharing
 
 ### Frontend
-- **HTML5** - Struttura
-- **CSS3** - Stili e animazioni
-- **Vanilla JavaScript** - Logica applicativa
-- **QRCode.js** - Generazione QR Code
-- **Flag Icons** - Bandiere per selezione lingua
+- **HTML5** - Structure
+- **CSS3** - Styles and animations
+- **Vanilla JavaScript** - Application logic
+- **QRCode.js** - QR Code generation
+- **Flag Icons** - Flags for language selection
 
 ---
 
 ## 📊 API Endpoints
 
-### Autenticazione
-- `POST /api/auth/login` - Login utente
-- `POST /api/auth/logout` - Logout utente
-- `GET /api/auth/check` - Verifica autenticazione
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/check` - Verify authentication
 
-### Manutenzioni (Protette)
-- `GET /api/manutenzioni` - Lista tutte le manutenzioni
-- `GET /api/manutenzioni/:id` - Dettaglio manutenzione (pubblica)
-- `POST /api/manutenzioni` - Crea nuova manutenzione
-- `PUT /api/manutenzioni/:id` - Aggiorna manutenzione
-- `PUT /api/manutenzioni/:id/data` - Aggiorna solo data/scadenza
-- `DELETE /api/manutenzioni/:id` - Elimina manutenzione
-- `DELETE /api/manutenzioni` - Elimina tutte le manutenzioni
+### Maintenances (Protected)
+- `GET /api/manutenzioni` - List all maintenances
+- `GET /api/manutenzioni/:id` - Maintenance details (public)
+- `POST /api/manutenzioni` - Create new maintenance
+- `PUT /api/manutenzioni/:id` - Update maintenance
+- `PUT /api/manutenzioni/:id/data` - Update only date/due date
+- `DELETE /api/manutenzioni/:id` - Delete maintenance
+- `DELETE /api/manutenzioni` - Delete all maintenances
 
-### Ricerca e Statistiche (Protette)
-- `GET /api/search/:query` - Ricerca manutenzioni
-- `GET /api/stats` - Statistiche dashboard
-- `GET /api/count` - Conta record
+### Search and Statistics (Protected)
+- `GET /api/search/:query` - Search maintenances
+- `GET /api/stats` - Dashboard statistics
+- `GET /api/count` - Count records
 
-### Export/Import (Protette)
-- `GET /api/export` - Esporta tutti i dati
-- `POST /api/import` - Importa dati da JSON
+### Export/Import (Protected)
+- `GET /api/export` - Export all data
+- `POST /api/import` - Import data from JSON
 
-### Impostazioni
-- `GET /api/settings` - Ottieni impostazioni (pubblica)
-- `POST /api/settings` - Salva impostazioni (protetta)
+### Settings
+- `GET /api/settings` - Get settings (public)
+- `POST /api/settings` - Save settings (protected)
 
-### Gestione Utenti (Protette)
-- `GET /api/users` - Lista utenti
-- `POST /api/users` - Crea utente
-- `PUT /api/users/:id` - Aggiorna utente
-- `DELETE /api/users/:id` - Elimina utente
+### User Management (Protected)
+- `GET /api/users` - List users
+- `POST /api/users` - Create user
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
 
 ---
 
-## 🔒 Sicurezza
+## 🔒 Security
 
-- ✅ **Password Hash**: Bcrypt con salt rounds = 10
-- ✅ **Sessioni HTTP-Only**: Cookie protetti da XSS
-- ✅ **Validazione Input**: Controllo dati lato server
+- ✅ **Password Hash**: Bcrypt with salt rounds = 10
+- ✅ **HTTP-Only Sessions**: XSS-protected cookies
+- ✅ **Input Validation**: Server-side data validation
 - ✅ **SQL Injection Protection**: Prepared statements
-- ✅ **CORS**: Configurato per richieste sicure
-- ✅ **Autenticazione Obbligatoria**: Tutte le operazioni critiche protette
-- ✅ **Protezione Ultimo Utente**: Non eliminabile
+- ✅ **CORS**: Configured for secure requests
+- ✅ **Required Authentication**: All critical operations protected
+- ✅ **Last User Protection**: Cannot be deleted
 
 ---
 
-## 🌐 Deployment in Produzione
+## 🌐 Production Deployment
 
-### Configurazione Server
+### Server Configuration
 
-1. **Modifica porta** (opzionale) in `server.js`:
+1. **Change port** (optional) in `server.js`:
    ```javascript
    const PORT = process.env.PORT || 3000;
    ```
 
-2. **Cambia secret sessione** in `server.js`:
+2. **Change session secret** in `server.js`:
    ```javascript
    secret: process.env.SESSION_SECRET || 'YOUR_SECURE_SECRET_KEY'
    ```
 
-3. **Configura HTTPS** (consigliato per produzione)
+3. **Configure HTTPS** (recommended for production)
 
-4. **Usa reverse proxy** (NGINX, Apache) per esporre il server
+4. **Use reverse proxy** (NGINX, Apache) to expose the server
 
-### Esempio NGINX
+### NGINX Example
 ```nginx
 server {
     listen 80;
-    server_name tuodominio.com;
+    server_name yourdomain.com;
 
     location / {
         proxy_pass http://localhost:3000;
@@ -319,9 +319,9 @@ server {
 }
 ```
 
-### Avvio Automatico (systemd)
+### Auto-Start (systemd)
 
-Crea `/etc/systemd/system/qrepair.service`:
+Create `/etc/systemd/system/qrepair.service`:
 
 ```ini
 [Unit]
@@ -339,7 +339,7 @@ Restart=on-failure
 WantedBy=multi-user.target
 ```
 
-Abilita e avvia:
+Enable and start:
 ```bash
 sudo systemctl enable qrepair
 sudo systemctl start qrepair
@@ -349,60 +349,60 @@ sudo systemctl start qrepair
 
 ## 🐛 Troubleshooting
 
-### Server non si avvia
+### Server won't start
 ```bash
-# Verifica che la porta 3000 sia libera
+# Check if port 3000 is free
 netstat -ano | findstr :3000
 
-# Termina processo su porta 3000 (Windows)
+# Terminate process on port 3000 (Windows)
 taskkill /F /PID <PID>
 
-# Reinstalla dipendenze
+# Reinstall dependencies
 rm -rf node_modules package-lock.json
 npm install
 ```
 
-### Database corrotto
+### Corrupted database
 ```bash
-# Elimina il database (ATTENZIONE: perdi tutti i dati!)
+# Delete the database (WARNING: you'll lose all data!)
 rm manutenzioni.db
 
-# Riavvia il server (ricrea il database vuoto)
+# Restart the server (recreates empty database)
 npm start
 ```
 
-### Errori di login
-- Verifica che le credenziali siano corrette
-- Controlla i cookie del browser (elimina cookie localhost:3000)
-- Verifica che express-session sia installato: `npm list express-session`
+### Login errors
+- Verify credentials are correct
+- Check browser cookies (delete localhost:3000 cookies)
+- Verify express-session is installed: `npm list express-session`
 
-### QR Code non si genera
-- Controlla la console JavaScript del browser (F12)
-- Verifica che QRCode.js sia caricato correttamente
-- Controlla la connessione al server
+### QR Code won't generate
+- Check JavaScript console in browser (F12)
+- Verify QRCode.js loads correctly
+- Check server connection
 
 ---
 
-## 🔄 Backup e Restore
+## 🔄 Backup and Restore
 
-### Backup Manuale
+### Manual Backup
 ```bash
-# Esporta tutti i dati dalla Dashboard (📥 Esporta JSON)
-# Oppure copia i file:
+# Export all data from Dashboard (📥 Export JSON)
+# Or copy files:
 cp manutenzioni.db manutenzioni.db.backup
 cp settings.json settings.json.backup
 ```
 
 ### Restore
 ```bash
-# Ripristina file di backup
+# Restore backup files
 cp manutenzioni.db.backup manutenzioni.db
 cp settings.json.backup settings.json
 ```
 
-### Backup Automatico (Linux/Mac - cron)
+### Automatic Backup (Linux/Mac - cron)
 ```bash
-# Aggiungi a crontab (crontab -e)
+# Add to crontab (crontab -e)
 0 2 * * * cp /path/to/QRepair/manutenzioni.db /backup/manutenzioni_$(date +\%Y\%m\%d).db
 ```
 
@@ -410,41 +410,41 @@ cp settings.json.backup settings.json
 
 ## 📝 Changelog
 
-### v1.0.0 (Gennaio 2026)
-- ✅ Sistema di autenticazione completo
-- ✅ Gestione utenti
-- ✅ Generazione QR Code
-- ✅ Dashboard con statistiche
-- ✅ Supporto multilingua (IT/EN/DE)
-- ✅ Integrazione WhatsApp
-- ✅ Export/Import CSV e JSON
-- ✅ Campo Serial Number (S/N)
-- ✅ URL senza estensione .html
-- ✅ Database SQLite persistente
-- ✅ Gestione scadenze con colori
+### v1.0.0 (January 2026)
+- ✅ Complete authentication system
+- ✅ User management
+- ✅ QR Code generation
+- ✅ Dashboard with statistics
+- ✅ Multilingual support (IT/EN/DE)
+- ✅ WhatsApp integration
+- ✅ CSV and JSON export/import
+- ✅ Serial Number (S/N) field
+- ✅ Clean URLs without .html extension
+- ✅ Persistent SQLite database
+- ✅ Due date management with color indicators
 - ✅ Responsive design
 
 ---
 
-## 🤝 Contributi
+## 🤝 Contributing
 
-I contributi sono benvenuti! Per favore:
+Contributions are welcome! Please:
 
-1. Fork del progetto
-2. Crea un branch per la tua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit delle modifiche (`git commit -m 'Add some AmazingFeature'`)
-4. Push sul branch (`git push origin feature/AmazingFeature`)
-5. Apri una Pull Request
-
----
-
-## 📄 Licenza
-
-Questo progetto è rilasciato sotto licenza **MIT**.
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-## 👨‍💻 Autore
+## 📄 License
+
+This project is released under the **MIT License**.
+
+---
+
+## 👨‍💻 Author
 
 **Guido Ballarini**
 
@@ -453,9 +453,9 @@ Questo progetto è rilasciato sotto licenza **MIT**.
 
 ---
 
-## 💖 Supporta il Progetto
+## 💖 Support the Project
 
-Se trovi utile questo progetto, considera di offrirmi un caffè! ☕
+If you find this project useful, consider buying me a coffee! ☕
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20-yellow.svg?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/guidoballau)
 [![PayPal](https://img.shields.io/badge/PayPal-Donate-blue.svg?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN)
@@ -464,7 +464,7 @@ Se trovi utile questo progetto, considera di offrirmi un caffè! ☕
 
 <div align="center">
 
-**⭐ Se ti piace il progetto, lascia una stella su GitHub! ⭐**
+**⭐ If you like the project, leave a star on GitHub! ⭐**
 
 Made with ❤️ by Guido Ballarini - © 2026
 

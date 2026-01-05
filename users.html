@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Utenti - QR Code Manutenzioni</title>
+    <title>User Management - QR Code Maintenance</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -146,12 +146,12 @@
 <body>
     <div class="container">
         <div class="card">
-            <h1>👥 Gestione Utenti</h1>
+            <h1>👥 User Management</h1>
             
             <div class="dashboard-header">
                 <div class="export-buttons">
-                    <a href="dashboard" class="btn-small btn-export">← Torna alla Dashboard</a>
-                    <button onclick="showAddUserModal()" class="btn-small" style="background: #10b981; color: white;">➕ Nuovo Utente</button>
+                    <a href="dashboard" class="btn-small btn-export">← Back to Dashboard</a>
+                    <button onclick="showAddUserModal()" class="btn-small" style="background: #10b981; color: white;">➕ New User</button>
                 </div>
             </div>
             
@@ -164,7 +164,7 @@
                     <a href="https://buymeacoffee.com/guidoballau" target="_blank" style="margin: 0 8px; text-decoration: none; color: #FFDD00;" title="Buy Me a Coffee">☕ Donazione</a>
                     <a href="https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN" target="_blank" style="margin: 0 8px; text-decoration: none; color: #0070BA;" title="PayPal">💳 PayPal</a>
                 </p>
-                <p style="margin-bottom: 0;">&copy; 2026 - Tutti i diritti riservati</p>
+                <p style="margin-bottom: 0;">&copy; 2026 - All rights reserved</p>
             </footer>
         </div>
     </div>
@@ -173,11 +173,11 @@
     <div id="user-modal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
             <span class="close" onclick="closeUserModal()">&times;</span>
-            <h2 id="modal-title">➕ Nuovo Utente</h2>
+            <h2 id="modal-title">➕ New User</h2>
             <form id="userForm">
                 <input type="hidden" id="user-id">
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Nome Completo:</label>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Full Name:</label>
                     <input type="text" id="user-nome" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                 </div>
                 <div style="margin-bottom: 15px;">
@@ -188,16 +188,16 @@
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">Password:</label>
                     <input type="password" id="user-password" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     <small id="password-hint" style="display: block; margin-top: 8px; padding: 8px; background: #f0f9ff; border-left: 3px solid #3b82f6; border-radius: 4px; font-size: 11px; color: #1e40af;">
-                        <strong>Requisiti password:</strong><br>
-                        ✓ Minimo 6 caratteri<br>
-                        ✓ Almeno una lettera maiuscola (A-Z)<br>
-                        ✓ Almeno un carattere speciale (!@#$%^&*()_+-=[]{}|;:,.<>?)
+                        <strong>Password requirements:</strong><br>
+                        ✓ Minimum 6 characters<br>
+                        ✓ At least one uppercase letter (A-Z)<br>
+                        ✓ At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)
                     </small>
-                    <small id="password-edit-hint" style="display: none; color: #666; font-size: 12px; margin-top: 5px;">Lascia vuoto per non modificare la password</small>
+                    <small id="password-edit-hint" style="display: none; color: #666; font-size: 12px; margin-top: 5px;">Leave blank to keep current password</small>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1;">✅ Salva</button>
-                    <button type="button" onclick="closeUserModal()" class="btn" style="flex: 1; background: #ccc;">❌ Annulla</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">✅ Save</button>
+                    <button type="button" onclick="closeUserModal()" class="btn" style="flex: 1; background: #ccc;">❌ Cancel</button>
                 </div>
             </form>
         </div>
@@ -238,8 +238,8 @@
                 container.innerHTML = `
                     <div style="text-align: center; padding: 40px; color: #999;">
                         <div style="font-size: 64px;">👤</div>
-                        <h3>Nessun utente trovato</h3>
-                        <p>Clicca su "Nuovo Utente" per aggiungerne uno</p>
+                        <h3>No users found</h3>
+                        <p>Click on "New User" to add one</p>
                     </div>
                 `;
                 return;
@@ -250,10 +250,10 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nome</th>
+                            <th>Name</th>
                             <th>Username</th>
-                            <th>Creato il</th>
-                            <th>Azioni</th>
+                            <th>Created On</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -269,8 +269,8 @@
                         <td>${createdDate}</td>
                         <td>
                             <div class="action-buttons">
-                                <button onclick="editUser(${user.id})" class="btn-action btn-view">✏️ Modifica</button>
-                                <button onclick="deleteUser(${user.id})" class="btn-action btn-delete">🗑️ Elimina</button>
+                                <button onclick="editUser(${user.id})" class="btn-action btn-view">✏️ Edit</button>
+                                <button onclick="deleteUser(${user.id})" class="btn-action btn-delete">🗑️ Delete</button>
                             </div>
                         </td>
                     </tr>
@@ -286,7 +286,7 @@
         }
         
         function showAddUserModal() {
-            document.getElementById('modal-title').textContent = '➕ Nuovo Utente';
+            document.getElementById('modal-title').textContent = '➕ New User';
             document.getElementById('userForm').reset();
             document.getElementById('user-id').value = '';
             document.getElementById('user-password').required = true;
@@ -299,7 +299,7 @@
             const user = users.find(u => u.id === id);
             if (!user) return;
             
-            document.getElementById('modal-title').textContent = '✏️ Modifica Utente';
+            document.getElementById('modal-title').textContent = '✏️ Edit User';
             document.getElementById('user-id').value = user.id;
             document.getElementById('user-nome').value = user.nome;
             document.getElementById('user-username').value = user.username;
@@ -338,7 +338,7 @@
                 }
             } else if (!id) {
                 // Password obbligatoria per nuovo utente
-                alert('❌ La password è obbligatoria per i nuovi utenti');
+                alert('❌ Password is required for new users');
                 return;
             }
             
@@ -362,7 +362,7 @@
                     loadUsers();
                     alert(id ? '✅ Utente aggiornato' : '✅ Utente creato');
                 } else {
-                    alert('❌ ' + (result.error || 'Errore durante il salvataggio'));
+                    alert('❌ ' + (result.error || 'Error during save'));
                 }
             } catch (error) {
                 console.error('Errore:', error);
@@ -371,7 +371,7 @@
         });
         
         async function deleteUser(id) {
-            if (!confirm('Sei sicuro di voler eliminare questo utente?')) return;
+            if (!confirm('Are you sure you want to delete this user?')) return;
             
             try {
                 const response = await fetch(`/api/users/${id}`, {
@@ -384,7 +384,7 @@
                     loadUsers();
                     alert('✅ Utente eliminato');
                 } else {
-                    alert('❌ ' + (result.error || 'Errore durante l\'eliminazione'));
+                    alert('❌ ' + (result.error || 'Error during deletion'));
                 }
             } catch (error) {
                 console.error('Errore:', error);
@@ -392,5 +392,17 @@
             }
         }
     </script>
-</body>
-</html>
+    <script src="translations.js"></script>
+    <script>
+        // Apply translations on page load
+        window.applyTranslations = function() {
+            const t = translations.users[getCurrentLanguage()];
+            document.querySelector('h1').textContent = t.title;
+            const buttons = document.querySelectorAll('.export-buttons button, .export-buttons a');
+            if (buttons[0]) buttons[0].textContent = t.backButton;
+            if (buttons[1]) buttons[1].textContent = t.newUserButton;
+        };
+        
+        // Apply translations immediately
+        document.addEventListener('DOMContentLoaded', applyTranslations);
+    </script>

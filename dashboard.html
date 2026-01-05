@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Storico Manutenzioni</title>    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Dashboard - Maintenance History</title>    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="api-client.js"></script>
@@ -249,12 +249,12 @@
     <div class="container" style="max-width: 1200px;">
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                <h1>📊 Dashboard Manutenzioni</h1>
+                <h1>📊 Maintenance Dashboard</h1>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <a href="clients" class="btn-small" style="background: #f59e0b; color: white; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap;">👥 Clienti</a>
-                    <a href="users" class="btn-small" style="background: #10b981; color: white; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap;">👤 Utenti</a>
-                    <a href="index" class="btn-small btn-export" style="text-decoration: none; padding: 8px 12px; font-size: 13px; white-space: nowrap;">🎯 Generatore QR</a>
-                    <a href="settings" class="btn-small" style="background: #6c757d; color: white; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap;">⚙️ Impostazioni</a>
+                    <a href="clients" class="btn-small" style="background: #f59e0b; color: white; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap;">👥 Customers</a>
+                    <a href="users" class="btn-small" style="background: #10b981; color: white; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap;">👤 Users</a>
+                    <a href="index" class="btn-small btn-export" style="text-decoration: none; padding: 8px 12px; font-size: 13px; white-space: nowrap;">🎯 QR Generator</a>
+                    <a href="settings" class="btn-small" style="background: #6c757d; color: white; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap;">⚙️ Settings</a>
                     <button onclick="logout()" class="btn-small" style="background: #ef4444; color: white; padding: 8px 12px; font-size: 13px; white-space: nowrap;">🚪 Logout</button>
                 </div>
             </div>
@@ -262,36 +262,36 @@
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-number" id="total-records">0</div>
-                    <div class="stat-label">Totale Manutenzioni</div>
+                    <div class="stat-label">Total Maintenances</div>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
                     <div class="stat-number" id="this-month">0</div>
-                    <div class="stat-label">Questo Mese</div>
+                    <div class="stat-label">This Month</div>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                     <div class="stat-number" id="unique-clients">0</div>
-                    <div class="stat-label">Clienti Unici</div>
+                    <div class="stat-label">Unique Customers</div>
                 </div>
             </div>
             
             <div class="dashboard-header">
                 <div class="search-box">
-                    <input type="text" id="search" placeholder="🔍 Cerca per nome, telefono, modello o S/N...">
+                    <input type="text" id="search" placeholder="🔍 Search by name, phone, model or S/N...">
                 </div>
                 <div class="export-buttons">
-                    <button onclick="exportToCSV()" class="btn-small btn-export">📥 Esporta CSV</button>
-                    <button onclick="exportToJSON()" class="btn-small btn-export">📥 Esporta JSON</button>
-                    <button onclick="importData()" class="btn-small btn-import">📤 Importa</button>
-                    <button onclick="clearAll()" class="btn-small btn-clear">🗑️ Cancella Tutto</button>
+                    <button onclick="exportToCSV()" class="btn-small btn-export">📥 Export CSV</button>
+                    <button onclick="exportToJSON()" class="btn-small btn-export">📥 Export JSON</button>
+                    <button onclick="importData()" class="btn-small btn-import">📤 Import</button>
+                    <button onclick="clearAll()" class="btn-small btn-clear">🗑️ Delete All</button>
                 </div>
             </div>
             
             <div class="records-table">
                 <div id="table-container"></div>
                 <div class="pagination" id="pagination" style="display: none;">
-                    <button id="prev-btn" onclick="previousPage()">← Precedente</button>
-                    <span id="page-info">Pagina 1 di 1</span>
-                    <button id="next-btn" onclick="nextPage()">Successivo →</button>
+                    <button id="prev-btn" onclick="previousPage()">← Previous</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button id="next-btn" onclick="nextPage()">Next →</button>
                 </div>
             </div>
             
@@ -302,7 +302,7 @@
                     <a href="https://buymeacoffee.com/guidoballau" target="_blank" style="margin: 0 8px; text-decoration: none; color: #FFDD00;" title="Buy Me a Coffee">☕ Donazione</a>
                     <a href="https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN" target="_blank" style="margin: 0 8px; text-decoration: none; color: #0070BA;" title="PayPal">💳 PayPal</a>
                 </p>
-                <p style="margin-bottom: 0;">&copy; 2026 - Tutti i diritti riservati</p>
+                <p style="margin-bottom: 0;">&copy; 2026 - All rights reserved</p>
             </footer>
         </div>
     </div>
@@ -313,8 +313,8 @@
             <h2 id="modal-title">QR Code</h2>
             <div class="modal-qr" id="modal-qr"></div>
             <p id="modal-info"></p>
-            <button onclick="closeModal()" class="btn btn-secondary">Chiudi</button>
-            <button onclick="printQR()" class="btn btn-print">🖨️ Stampa</button>
+            <button onclick="closeModal()" class="btn btn-secondary">Close</button>
+            <button onclick="printQR()" class="btn btn-print">🖨️ Print</button>
         </div>
     </div>
     
@@ -322,14 +322,14 @@
     <div id="maintenance-modal" class="modal">
         <div class="modal-content" style="max-width: 400px;">
             <span class="close" onclick="closeMaintenanceModal()">&times;</span>
-            <h2>🔧 Manutenzione Eseguita</h2>
-            <p style="margin-bottom: 10px;">Aggiorna la data dell'ultima manutenzione</p>
+            <h2>🔧 Maintenance Completed</h2>
+            <p style="margin-bottom: 10px;">Update the last maintenance date</p>
             <div style="margin-bottom: 10px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Cliente:</label>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Customer:</label>
                 <input type="text" id="update-cliente" readonly style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f5f5f5;">
             </div>
             <div style="margin-bottom: 10px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Modello:</label>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Model:</label>
                 <input type="text" id="update-modello" readonly style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f5f5f5;">
             </div>
             <div style="margin-bottom: 10px;">
@@ -337,17 +337,17 @@
                 <input type="text" id="update-serialnumber" readonly style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f5f5f5;">
             </div>
             <div style="margin-bottom: 10px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nuova Data Manutenzione:</label>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">New Maintenance Date:</label>
                 <input type="date" id="update-data" required style="width: 100%; padding: 8px; border: 2px solid #667eea; border-radius: 8px; font-size: 14px;">
             </div>
             <div style="margin-bottom: 10px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nuova Data Scadenza:</label>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">New Due Date:</label>
                 <input type="date" id="update-scadenza" required style="width: 100%; padding: 8px; border: 2px solid #667eea; border-radius: 8px; font-size: 14px;">
-                <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">⚠️ La scadenza deve essere successiva alla data di manutenzione</small>
+                <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">⚠️ The due date must be after the maintenance date</small>
             </div>
             <div style="display: flex; gap: 10px;">
-                <button onclick="saveMaintenanceUpdate()" class="btn btn-primary" style="flex: 1;">✅ Salva</button>
-                <button onclick="closeMaintenanceModal()" class="btn" style="flex: 1; background: #ccc;">❌ Annulla</button>
+                <button onclick="saveMaintenanceUpdate()" class="btn btn-primary" style="flex: 1;">✅ Save</button>
+                <button onclick="closeMaintenanceModal()" class="btn" style="flex: 1; background: #ccc;">❌ Cancel</button>
             </div>
         </div>
     </div>
@@ -447,14 +447,14 @@
                     <thead>
                         <tr>
                             <th style="width: 30px;"></th>
-                            <th>Nome Cliente</th>
-                            <th>Telefono</th>
-                            <th>Modello</th>
+                            <th>Customer Name</th>
+                            <th>Phone</th>
+                            <th>Model</th>
                             <th>S/N</th>
-                            <th>Data Manutenzione</th>
-                            <th>Scadenza</th>
-                            <th>Creato il</th>
-                            <th>Azioni</th>
+                            <th>Maintenance Date</th>
+                            <th>Due Date</th>
+                            <th>Created On</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -487,7 +487,7 @@
                     } else {
                         // Scadenza passata - Rosso con testo
                         statusDot = '<span style="font-size: 18px; color: #ef4444;">●</span>';
-                        scadenzaText = '<span style="color: #ef4444; font-weight: 600;">Scaduta</span>';
+                        scadenzaText = '<span style="color: #ef4444; font-weight: 600;">Expired</span>';
                     }
                 } else {
                     statusDot = '<span style="font-size: 18px; color: #ccc;">●</span>'; // Grigio se non c'è scadenza
@@ -621,12 +621,12 @@
             const newScadenzaInput = document.getElementById('update-scadenza').value;
             
             if (!newDataInput) {
-                alert('⚠️ Inserisci una data di manutenzione valida');
+                alert('⚠️ Enter a valid maintenance date');
                 return;
             }
             
-            if (!newScadenzaInput) {
-                alert('⚠️ Inserisci una data di scadenza valida');
+            if (!newScadenza) {
+                alert('⚠️ Enter a valid due date');
                 return;
             }
             
@@ -669,7 +669,7 @@
         }
         
         async function deleteRecord(index) {
-            if (!confirm('Sei sicuro di voler eliminare questo record?')) return;
+            if (!confirm('Are you sure you want to delete this record?')) return;
             
             try {
                 const record = filteredRecords[index];
@@ -677,13 +677,13 @@
                 await loadRecords();
             } catch (error) {
                 console.error('Errore eliminazione:', error);
-                alert('Errore durante l\'eliminazione');
+                alert('Error during deletion');
             }
         }
         
         async function clearAll() {
-            if (!confirm('⚠️ ATTENZIONE: Questo cancellerà TUTTI i record salvati. Sei sicuro?')) return;
-            if (!confirm('Sei DAVVERO sicuro? Questa azione è irreversibile!')) return;
+            if (!confirm('⚠️ WARNING: This will delete ALL saved records. Are you sure?')) return;
+            if (!confirm('Are you REALLY sure? This action is irreversible!')) return;
             
             try {
                 await api.clear();
@@ -691,13 +691,13 @@
                 await loadRecords();
             } catch (error) {
                 console.error('Errore cancellazione:', error);
-                alert('Errore durante la cancellazione');
+                alert('Error during deletion');
             }
         }
         
         function exportToCSV() {
             if (allRecords.length === 0) {
-                alert('Nessun dato da esportare');
+                alert('No data to export');
                 return;
             }
             
