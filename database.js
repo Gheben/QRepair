@@ -58,12 +58,22 @@ class QRDatabase {
     async init() {
         const SQL = await initSqlJs();
         
-        // Carica il database esistente se esiste
-        if (fs.existsSync(this.dbPath)) {
+        // Carica il database esistente se esiste e ha contenuto
+        if (fs.existsSync(this.dbPath) && fs.statSync(this.dbPath).size > 0) {
             const buffer = fs.readFileSync(this.dbPath);
             this.db = new SQL.Database(buffer);
             console.log('✅ Database caricato');
-            this.migrateDatabase(); // Aggiungi colonna lingua se non esiste
+            
+            // Verifica se le tabelle esistono, altrimenti creale
+            const tables = this.db.exec("SELECT name FROM sqlite_master WHERE type='table'");
+            if (!tables || tables.length === 0 || !tables[0]?.values?.some(v => v[0] === 'manutenzioni')) {
+                console.log('🔧 Database vuoto - creazione tabelle...');
+                this.createTables();
+                this.save();
+                console.log('✅ Tabelle create');
+            } else {
+                this.migrateDatabase(); // Aggiungi colonne mancanti se necessario
+            }
         } else {
             // Crea un nuovo database
             this.db = new SQL.Database();
