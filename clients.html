@@ -449,8 +449,16 @@
         
         // Modifica cliente
         async function editClient(id) {
+            console.log('editClient called with id:', id);
+            console.log('allClients:', allClients);
+            
             const client = allClients.find(c => c.id === id);
-            if (!client) return;
+            console.log('Found client:', client);
+            
+            if (!client) {
+                console.error('Client not found with id:', id);
+                return;
+            }
             
             document.getElementById('modal-title').textContent = '✏️ Edit Customer';
             document.getElementById('client-id').value = id;
@@ -465,6 +473,8 @@
         
         // Elimina cliente
         async function deleteClient(id, name) {
+            console.log('deleteClient called with id:', id, 'name:', name);
+            
             if (!confirm(`Are you sure you want to delete the customer "${name}"?\n\nWarning: associated maintenances will remain in the system.`)) {
                 return;
             }
