@@ -122,7 +122,7 @@ Prima di creare QR code, configura i dati della tua azienda:
 2. Inserisci:
    - **Nome Azienda** (es. "GB Service")
    - **Numero Telefono** (es. "+39 333 1234567")
-   - **Logo Aziendale** (opzionale, max 200x200px)
+   - **Logo Aziendale** (opzionale, max 5MB, formato PNG consigliato per trasparenza)
 3. Clicca su "💾 Salva Impostazioni"
 
 ### 3. Creazione QR Code
