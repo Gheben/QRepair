@@ -452,7 +452,7 @@
             console.log('editClient called with id:', id);
             console.log('allClients:', allClients);
             
-            const client = allClients.find(c => c.id === id);
+            const client = allClients.find(c => String(c.id) === String(id));
             console.log('Found client:', client);
             
             if (!client) {
@@ -550,7 +550,7 @@
             console.log('viewMaintenances called with clientId:', clientId);
             console.log('allClients:', allClients);
             
-            const client = allClients.find(c => c.id === clientId);
+            const client = allClients.find(c => String(c.id) === String(clientId));
             console.log('Found client:', client);
             
             if (!client) {
@@ -561,7 +561,7 @@
             document.getElementById('maintenances-title').textContent = 
                 `🔧 Manutenzioni di ${client.nome} ${client.cognome}`;
             
-            const clientMaintenances = allMaintenances.filter(m => m.client_id === clientId);
+            const clientMaintenances = allMaintenances.filter(m => String(m.client_id) === String(clientId));
             console.log('Client maintenances:', clientMaintenances);
             
             const sorted = clientMaintenances.sort((a, b) => 

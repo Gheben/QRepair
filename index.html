@@ -217,8 +217,14 @@
         let selectedClientId = null; // Variabile per salvare il cliente selezionato
         
         function selectClient(clientId) {
-            const client = allClients.find(c => c.id === clientId);
-            if (!client) return;
+            console.log('selectClient called with:', clientId);
+            const client = allClients.find(c => String(c.id) === String(clientId));
+            console.log('Found client:', client);
+            
+            if (!client) {
+                console.error('Client not found with id:', clientId);
+                return;
+            }
             
             // Salva l'ID del cliente selezionato
             selectedClientId = clientId;
