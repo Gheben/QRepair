@@ -35,10 +35,14 @@
             color: white;
         }
         
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
             background: white;
             border-radius: 10px;
             overflow: hidden;
@@ -99,6 +103,23 @@
         .btn-action:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            th, td {
+                padding: 8px;
+                font-size: 12px;
+            }
+            
+            .btn-action {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 4px;
+            }
         }
         
         .search-box {
@@ -387,6 +408,7 @@
             const langFlags = { it: 'it', en: 'gb', de: 'de' };
             
             let html = `
+                <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
@@ -434,6 +456,7 @@
             html += `
                     </tbody>
                 </table>
+                </div>
             `;
             
             container.innerHTML = html;
