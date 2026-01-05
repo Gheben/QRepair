@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Clienti - QR Code Manutenzioni</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-small {
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-export {
+            background: #4facfe;
+            color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-edit {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .maintenance-list {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        
+        .maintenance-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .maintenance-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 1200px;">
+        <div class="card">
+            <h1>👥 Gestione Clienti</h1>
+            
+            <div class="export-buttons">
+                <a href="dashboard" class="btn-small btn-export">← Torna alla Dashboard</a>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="search" placeholder="🔍 Cerca per nome o telefono...">
+            </div>
+            
+            <div id="clients-container"></div>
+            
+            <footer>
+                <p>Powered by <strong>Guido Ballarini</strong></p>
+                <p>&copy; 2026 - Tutti i diritti riservati</p>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Modal Modifica Cliente -->
+    <div id="client-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="closeClientModal()">&times;</span>
+            <h2 id="modal-title">✏️ Modifica Cliente</h2>
+            <form id="clientForm">
+                <input type="hidden" id="client-old-nome">
+                <input type="hidden" id="client-old-tel">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Nome Cliente:</label>
+                    <input type="text" id="client-nome" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Telefono:</label>
+                    <input type="tel" id="client-tel" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">✅ Salva</button>
+                    <button type="button" onclick="closeClientModal()" class="btn" style="flex: 1; background: #ccc;">❌ Annulla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal Manutenzioni Cliente -->
+    <div id="maintenances-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeMaintenancesModal()">&times;</span>
+            <h2 id="maintenances-title">🔧 Manutenzioni Cliente</h2>
+            <div id="maintenances-list"></div>
+        </div>
+    </div>
+    
+    <script>
+        let allRecords = [];
+        let clients = [];
+        let filteredClients = [];
+        
+        // Verifica autenticazione
+        fetch('http://localhost:3000/api/auth/check')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.authenticated) {
+                    window.location.href = '/login';
+                } else {
+                    loadClients();
+                }
+            })
+            .catch(() => window.location.href = '/login');
+        
+        async function loadClients() {
+            try {
+                const response = await fetch('http://localhost:3000/api/manutenzioni');
+                const data = await response.json();
+                if (data.success) {
+                    allRecords = data.data;
+                    processClients();
+                    renderClients();
+                }
+            } catch (error) {
+                console.error('Errore caricamento clienti:', error);
+            }
+        }
+        
+        function processClients() {
+            // Raggruppa record per cliente (nome + telefono)
+            const clientMap = new Map();
+            
+            allRecords.forEach(record => {
+                const key = `${record.nome}|${record.tel}`;
+                if (!clientMap.has(key)) {
+                    clientMap.set(key, {
+                        nome: record.nome,
+                        tel: record.tel,
+                        maintenances: []
+                    });
+                }
+                clientMap.get(key).maintenances.push(record);
+            });
+            
+            clients = Array.from(clientMap.values());
+            filteredClients = clients;
+        }
+        
+        function renderClients() {
+            const container = document.getElementById('clients-container');
+            
+            if (filteredClients.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <div style="font-size: 64px;">👤</div>
+                        <h3>Nessun cliente trovato</h3>
+                        <p>I clienti verranno creati automaticamente quando generi QR code</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome Cliente</th>
+                            <th>Telefono</th>
+                            <th>N° Manutenzioni</th>
+                            <th>Ultima Manutenzione</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            filteredClients.forEach(client => {
+                const sortedMaintenances = client.maintenances.sort((a, b) => 
+                    new Date(b.data) - new Date(a.data)
+                );
+                const lastMaintenance = sortedMaintenances[0];
+                const lastDate = new Date(lastMaintenance.data).toLocaleDateString('it-IT');
+                
+                html += `
+                    <tr>
+                        <td><strong>${client.nome}</strong></td>
+                        <td>${client.tel}</td>
+                        <td>${client.maintenances.length}</td>
+                        <td>${lastDate}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button onclick="viewMaintenances('${escapeHtml(client.nome)}', '${escapeHtml(client.tel)}')" class="btn-action btn-view">👁️ Manutenzioni</button>
+                                <button onclick="editClient('${escapeHtml(client.nome)}', '${escapeHtml(client.tel)}')" class="btn-action btn-edit">✏️ Modifica</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function escapeHtml(text) {
+            return text.replace(/'/g, "\\'");
+        }
+        
+        function viewMaintenances(nome, tel) {
+            const client = clients.find(c => c.nome === nome && c.tel === tel);
+            if (!client) return;
+            
+            document.getElementById('maintenances-title').textContent = `🔧 Manutenzioni di ${nome}`;
+            
+            const sortedMaintenances = client.maintenances.sort((a, b) => 
+                new Date(b.data) - new Date(a.data)
+            );
+            
+            let html = '<table style="margin-top: 20px;"><thead><tr><th>Data</th><th>Modello</th><th>S/N</th><th>Scadenza</th><th>Azioni</th></tr></thead><tbody>';
+            
+            sortedMaintenances.forEach(m => {
+                const dataFormat = new Date(m.data).toLocaleDateString('it-IT');
+                const scadenzaFormat = m.scadenza ? new Date(m.scadenza).toLocaleDateString('it-IT') : '-';
+                
+                html += `
+                    <tr>
+                        <td>${dataFormat}</td>
+                        <td>${m.modello || '-'}</td>
+                        <td>${m.serialNumber || '-'}</td>
+                        <td>${scadenzaFormat}</td>
+                        <td>
+                            <a href="/info?id=${m.id}" target="_blank" class="btn-action btn-view">👁️ Vedi</a>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            
+            document.getElementById('maintenances-list').innerHTML = html;
+            document.getElementById('maintenances-modal').classList.add('active');
+        }
+        
+        function closeMaintenancesModal() {
+            document.getElementById('maintenances-modal').classList.remove('active');
+        }
+        
+        function editClient(nome, tel) {
+            document.getElementById('client-old-nome').value = nome;
+            document.getElementById('client-old-tel').value = tel;
+            document.getElementById('client-nome').value = nome;
+            document.getElementById('client-tel').value = tel;
+            document.getElementById('client-modal').classList.add('active');
+        }
+        
+        function closeClientModal() {
+            document.getElementById('client-modal').classList.remove('active');
+        }
+        
+        document.getElementById('clientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const oldNome = document.getElementById('client-old-nome').value;
+            const oldTel = document.getElementById('client-old-tel').value;
+            const newNome = document.getElementById('client-nome').value;
+            const newTel = document.getElementById('client-tel').value;
+            
+            try {
+                // Trova tutti i record del cliente
+                const clientRecords = allRecords.filter(r => r.nome === oldNome && r.tel === oldTel);
+                
+                // Aggiorna ogni record
+                const updates = clientRecords.map(record => 
+                    fetch(`http://localhost:3000/api/manutenzioni/${record.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            ...record,
+                            nome: newNome,
+                            tel: newTel
+                        })
+                    })
+                );
+                
+                await Promise.all(updates);
+                
+                closeClientModal();
+                loadClients();
+                alert(`✅ Cliente aggiornato! ${clientRecords.length} record modificati.`);
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('❌ Errore durante l\'aggiornamento');
+            }
+        });
+        
+        // Ricerca clienti
+        document.getElementById('search').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            
+            if (query === '') {
+                filteredClients = clients;
+            } else {
+                filteredClients = clients.filter(c => 
+                    c.nome.toLowerCase().includes(query) || 
+                    c.tel.includes(query)
+                );
+            }
+            
+            renderClients();
+        });
+    </script>
+</body>
+</html>
