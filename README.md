@@ -36,13 +36,61 @@
 
 ## 🚀 Installation
 
-### Prerequisites
+### Option 1: Docker (Recommended)
 
+**Prerequisites:**
+- Docker and Docker Compose installed
+- Available port 3000
+
+**Quick Start:**
+
+```bash
+# Clone the repository
+git clone https://github.com/Gheben/QRepair.git
+cd QRepair
+
+# Start with Docker Compose
+docker-compose up -d
+
+# Check status
+docker ps
+
+# View logs
+docker logs qrepair
+```
+
+Access the application at `http://localhost:3000`
+
+**Docker Compose Configuration:**
+
+The `docker-compose.yml` file includes:
+- Automatic container restart
+- Port mapping (3000:3000)
+- Persistent volumes for database, settings, and uploads
+- Production environment
+
+**Stop the application:**
+```bash
+docker-compose down
+```
+
+**Update the application:**
+```bash
+git pull
+docker-compose down
+docker-compose up -d --build
+```
+
+---
+
+### Option 2: Manual Installation
+
+**Prerequisites:**
 - **Node.js** (v14 or higher) - [Download](https://nodejs.org/)
 - **npm** (included with Node.js)
 - Modern browser (Chrome, Firefox, Edge, Safari)
 
-### Installation Steps
+**Installation Steps:**
 
 1. **Clone the repository**
    ```bash
@@ -286,7 +334,48 @@ QRepair/
 
 ## 🌐 Production Deployment
 
-### Server Configuration
+### Docker Deployment (Recommended)
+
+**For Synology NAS or VPS:**
+
+1. **Install Container Manager** (Synology) or Docker on your server
+
+2. **Clone and deploy:**
+   ```bash
+   # SSH into your server
+   ssh admin@your-server.com
+   
+   # Navigate to your docker folder
+   cd /volume1/docker  # Synology
+   # or cd /opt/docker  # Linux VPS
+   
+   # Clone the repository
+   git clone https://github.com/Gheben/QRepair.git
+   cd QRepair
+   
+   # Start with Docker Compose
+   docker-compose up -d
+   ```
+
+3. **Configure reverse proxy** (optional but recommended)
+   - Synology: Control Panel → Login Portal → Advanced → Reverse Proxy
+   - NGINX: See configuration below
+
+**Environment Variables for Production:**
+
+Edit `docker-compose.yml` to add:
+```yaml
+environment:
+  - NODE_ENV=production
+  - PORT=3000
+  - SESSION_SECRET=your-very-secure-random-secret-key
+```
+
+---
+
+### Manual Server Deployment
+
+**Server Configuration:**
 
 1. **Change port** (optional) in `server.js`:
    ```javascript

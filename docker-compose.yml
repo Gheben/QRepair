@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  qrepair:
+    build: .
+    container_name: qrepair
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+      - ./manutenzioni.db:/app/manutenzioni.db
+      - ./settings.json:/app/settings.json
+      - ./uploads:/app/uploads
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
