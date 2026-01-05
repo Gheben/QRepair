@@ -579,9 +579,9 @@
                         <td>${scadenzaFormat}</td>
                         <td>
                             <div class="action-buttons">
-                                <button onclick="showMaintenanceUpdateModal(${m.id})" class="btn-action btn-edit">🔄 Manutenzione Eseguita</button>
+                                <button onclick="showMaintenanceUpdateModal('${m.id}')" class="btn-action btn-edit">🔄 Manutenzione Eseguita</button>
                                 <a href="/info?id=${m.id}" target="_blank" class="btn-action btn-view">👁️ Vedi</a>
-                                <button onclick="deleteMaintenance(${m.id}, '${m.modello || 'Manutenzione'}')" class="btn-action btn-delete">🗑️</button>
+                                <button onclick="deleteMaintenance('${m.id}', '${m.modello || 'Manutenzione'}')" class="btn-action btn-delete">🗑️</button>
                             </div>
                         </td>
                     </tr>
