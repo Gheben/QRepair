@@ -106,7 +106,7 @@ app.use(session({
     cookie: {
         maxAge: 1000 * 60 * 60 * 24, // 24 ore
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Abilita secure solo in produzione (HTTPS)
+        secure: 'auto', // 'auto' abilita secure solo quando la richiesta è HTTPS
         sameSite: 'lax' // lax funziona sia in sviluppo che in produzione con reverse proxy
     },
     proxy: true // Importante per reverse proxy (NGINX, Synology)
