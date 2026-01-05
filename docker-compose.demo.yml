@@ -8,11 +8,15 @@ services:
     ports:
       - "5127:5126"
     volumes:
-      - ./data-demo:/app/data
-      - ./manutenzioni-demo.db:/app/manutenzioni.db
-      - ./settings-demo.json:/app/settings.json
-      - ./uploads-demo:/app/uploads
+      - qrepair-demo-data:/app/data
+      - qrepair-demo-db:/app
+      - qrepair-demo-uploads:/app/uploads
     environment:
       - NODE_ENV=production
       - PORT=5126
       - DEMO_MODE=true
+
+volumes:
+  qrepair-demo-data:
+  qrepair-demo-db:
+  qrepair-demo-uploads:
