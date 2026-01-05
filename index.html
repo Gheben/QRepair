@@ -116,14 +116,24 @@
             </form>
 
             <div id="result" style="display: none;">
+                <div class="print-header" style="display: none;">
+                    <img id="print-logo" src="" alt="" style="max-height: 100px; margin: 0 auto 15px auto; display: none;">
+                    <h1 id="print-company" style="margin: 10px 0; font-size: 26px; font-weight: bold;"></h1>
+                    <p id="print-contact" style="margin: 5px 0 20px 0; font-size: 18px;"></p>
+                </div>
                 <hr>
                 <h2>✅ QR Code Generated!</h2>
                 <p class="info-text">Print this QR code and apply it to the customer's device</p>
                 
                 <div id="qrcode"></div>
+                <p id="print-info" style="display: none; margin-top: 20px; text-align: center;"></p>
+                
+                <div class="print-footer" style="display: none;">
+                    <p style="font-size: 10px; color: #999; margin-top: 40px;">Powered by QRepair Service</p>
+                </div>
                 
                 <div class="actions">
-                    <button onclick="window.print()" class="btn btn-print">🖨️ Print</button>
+                    <button onclick="printQR()" class="btn btn-print">🖨️ Print</button>
                     <button onclick="resetForm()" class="btn btn-secondary">🔄 Generate New</button>
                 </div>
             </div>
@@ -258,6 +268,9 @@
             })
             .catch(() => window.location.href = '/login');
         
+        // Variabile per dati correnti
+        let currentRecord = {};
+        
         // Carica impostazioni fornitore
         async function loadFornitoreSetting() {
             try {
@@ -269,6 +282,24 @@
             } catch (error) {
                 console.error('Errore caricamento impostazioni:', error);
             }
+        }
+        
+        // Funzione per stampare il QR con layout professionale
+        function printQR() {
+            // Mostra gli elementi per la stampa
+            document.querySelector('.print-header').style.display = 'block';
+            document.querySelector('.print-footer').style.display = 'block';
+            document.getElementById('print-info').style.display = 'block';
+            
+            // Stampa
+            window.print();
+            
+            // Nascondi di nuovo gli elementi dopo la stampa
+            setTimeout(() => {
+                document.querySelector('.print-header').style.display = 'none';
+                document.querySelector('.print-footer').style.display = 'none';
+                document.getElementById('print-info').style.display = 'none';
+            }, 100);
         }
 
         // Verifica connessione al server
@@ -426,6 +457,14 @@
             // Pulisci il QR code precedente
             qrcodeDiv.innerHTML = '';
             
+            // Salva i dati correnti per la stampa
+            currentRecord = {
+                nome: nomeCliente,
+                tel: telCliente,
+                modello: modello,
+                serialNumber: serialNumber
+            };
+            
             // Genera il QR code
             new QRCode(qrcodeDiv, {
                 text: url,
@@ -435,6 +474,36 @@
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.H
             });
+            
+            // Carica le impostazioni per la stampa
+            try {
+                const response = await fetch('/api/settings');
+                const result = await response.json();
+                const settings = result.data || result;
+                
+                document.getElementById('print-company').textContent = settings.nomeAzienda || '';
+                document.getElementById('print-contact').textContent = settings.telefono || '';
+                
+                const logoImg = document.getElementById('print-logo');
+                if (settings.logo) {
+                    const logoSrc = settings.logo.startsWith('data:') ? settings.logo : `data:image/png;base64,${settings.logo}`;
+                    logoImg.src = logoSrc;
+                    logoImg.style.display = 'block';
+                } else {
+                    logoImg.style.display = 'none';
+                }
+                
+                // Popola informazioni device
+                const printInfo = document.getElementById('print-info');
+                if (currentRecord.modello || currentRecord.serialNumber) {
+                    printInfo.innerHTML = `
+                        <strong>🔧 Model:</strong> ${currentRecord.modello || 'N/A'}<br>
+                        <strong>🔢 S/N:</strong> ${currentRecord.serialNumber || 'N/A'}
+                    `;
+                }
+            } catch (err) {
+                console.error('Errore caricamento settings:', err);
+            }
             
             // Mostra il risultato
             form.style.display = 'none';
@@ -469,16 +538,74 @@
             body * {
                 visibility: hidden;
             }
-            #result, #result * {
+            
+            .print-header,
+            .print-header *,
+            #qrcode,
+            #qrcode *,
+            #print-info,
+            #print-info *,
+            .print-footer,
+            .print-footer * {
                 visibility: visible;
             }
-            #result {
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
+            
+            .print-header {
+                display: block !important;
+                visibility: visible;
+                position: fixed;
+                top: 1cm;
+                left: 0;
+                right: 0;
+                text-align: center;
+                margin: 0 auto;
+                margin-bottom: 30px;
+                border-bottom: 3px solid #333;
+                padding-bottom: 20px;
             }
-            .actions {
+            
+            #print-logo {
+                display: block !important;
+                max-height: 100px !important;
+                margin: 0 auto 15px auto !important;
+            }
+            
+            #qrcode {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                page-break-inside: avoid;
+            }
+            
+            #print-info {
+                display: block !important;
+                visibility: visible;
+                position: fixed;
+                top: calc(50% + 150px);
+                left: 0;
+                right: 0;
+                font-size: 18px;
+                line-height: 1.8;
+                text-align: center;
+            }
+            
+            .print-footer {
+                display: block !important;
+                visibility: visible;
+                position: fixed;
+                bottom: 1cm;
+                left: 0;
+                right: 0;
+                text-align: center;
+                border-top: 1px solid #ddd;
+                padding-top: 10px;
+            }
+            
+            .actions,
+            hr,
+            h2,
+            .info-text {
                 display: none !important;
             }
         }

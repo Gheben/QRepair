@@ -521,7 +521,7 @@
                             <div class="action-buttons">
                                 ${flag}
                                 <button onclick="updateMaintenance('${record.id}')" class="btn-action" style="background: transparent; color: #fbbf24; padding: 4px 8px; border: none; cursor: pointer; font-size: 18px;" title="Manutenzione eseguita">🔧</button>
-                                <button onclick="viewQR('${record.id}')" class="btn-action btn-view" style="margin-left: auto;">👁️ Vedi QR</button>
+                                <button onclick="viewQR('${record.id}')" class="btn-action btn-view" style="margin-left: auto;">👁️ View QR</button>
                                 <button onclick="deleteRecord('${record.id}')" class="btn-action btn-delete">🗑️</button>
                             </div>
                         </td>
@@ -624,7 +624,18 @@
         }
         
         function printQR() {
+            // Mostra gli elementi per la stampa
+            document.querySelector('.print-header').style.display = 'block';
+            document.querySelector('.print-footer').style.display = 'block';
+            
+            // Stampa
             window.print();
+            
+            // Nascondi di nuovo gli elementi dopo la stampa
+            setTimeout(() => {
+                document.querySelector('.print-header').style.display = 'none';
+                document.querySelector('.print-footer').style.display = 'none';
+            }, 100);
         }
         
         let currentMaintenanceId = null;
@@ -912,7 +923,7 @@
                 font-size: 18px;
                 line-height: 1.8;
                 margin-top: 30px;
-                text-align: left;
+                text-align: center;
                 max-width: 400px;
                 margin-left: auto;
                 margin-right: auto;
