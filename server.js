@@ -10,6 +10,9 @@ const app = express();
 const PORT = process.env.PORT || 5126;
 const SETTINGS_FILE = './settings.json';
 
+// Trust proxy - importante per reverse proxy (NGINX, Synology)
+app.set('trust proxy', 1);
+
 // Inizializza il database
 const db = new QRDatabase();
 
@@ -89,8 +92,9 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24, // 24 ore
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Abilita secure solo in produzione (HTTPS)
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-    }
+        sameSite: 'lax' // lax funziona sia in sviluppo che in produzione con reverse proxy
+    },
+    proxy: true // Importante per reverse proxy (NGINX, Synology)
 }));
 
 // Middleware per autenticazione
