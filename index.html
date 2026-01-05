@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore QR Code Manutenzioni</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="api-client.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div style="text-align: right; margin-bottom: 10px;">
+                <a href="dashboard" class="link-dashboard">📊 Dashboard (<span id="counter">0</span>)</a>
+            </div>
+            <h1>🔧 Generatore QR Code Manutenzioni</h1>
+            <p class="subtitle">Crea il tuo QR code personalizzato per i tuoi clienti</p>
+            
+            <form id="form-qr">
+                <div class="form-group">
+                    <label for="nome">Nome Cliente</label>
+                    <input type="text" id="nome" name="nome" required placeholder="es. Mario Rossi">
+                </div>
+
+                <div class="form-group">
+                    <label for="tel">Telefono Cliente</label>
+                    <input type="tel" id="tel" name="tel" required placeholder="es. 3331234567">
+                    <small style="color: #666;">Questi dati sono per la tua gestione interna</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="modello">Modello Dispositivo</label>
+                    <input type="text" id="modello" name="modello" placeholder="es. Baxi Luna 3 Comfort">
+                </div>
+
+                <div class="form-group">
+                    <label for="serialNumber">Serial Number (S/N)</label>
+                    <input type="text" id="serialNumber" name="serialNumber" placeholder="es. SN123456789">
+                </div>
+
+                <div class="form-group">
+                    <label for="lingua">Lingua del QR Code</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <select id="lingua" name="lingua" required style="flex: 1;">
+                            <option value="it">Italiano</option>
+                            <option value="en">Inglese</option>
+                            <option value="de">Tedesco</option>
+                        </select>
+                        <span id="flag-preview" class="fi fi-it" style="font-size: 32px;"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="data">Data Ultima Manutenzione</label>
+                    <input type="date" id="data" name="data" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="scadenza">Prossima Scadenza Manutenzione</label>
+                    <input type="date" id="scadenza" name="scadenza" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">🎯 GENERA QR CODE</button>
+            </form>
+
+            <div id="result" style="display: none;">
+                <hr>
+                <h2>✅ QR Code Generato!</h2>
+                <p class="info-text">Stampa questo QR code e applicalo sul dispositivo del cliente</p>
+                
+                <div id="qrcode"></div>
+                
+                <div class="actions">
+                    <button onclick="window.print()" class="btn btn-print">🖨️ Stampa</button>
+                    <button onclick="resetForm()" class="btn btn-secondary">🔄 Genera Nuovo</button>
+                </div>
+            </div>
+            
+            <footer>
+                <p>Powered by <strong>Guido Ballarini</strong></p>
+                <p>&copy; 2026 - Tutti i diritti riservati</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('form-qr');
+        const resultDiv = document.getElementById('result');
+        const qrcodeDiv = document.getElementById('qrcode');
+
+        // Variabile per dati fornitore
+        let fornitoreSetting = { nomeAzienda: 'GB Service', telefono: '3331234567' };
+        
+        // Verifica autenticazione
+        fetch('http://localhost:3000/api/auth/check')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.authenticated) {
+                    window.location.href = '/login';
+                } else {
+                    loadFornitoreSetting();
+                    checkServerConnection();
+                }
+            })
+            .catch(() => window.location.href = '/login');
+        
+        // Carica impostazioni fornitore
+        async function loadFornitoreSetting() {
+            try {
+                const response = await fetch('http://localhost:3000/api/settings');
+                const result = await response.json();
+                if (result.success && result.data && result.data.nomeAzienda && result.data.telefono) {
+                    fornitoreSetting = result.data;
+                }
+            } catch (error) {
+                console.error('Errore caricamento impostazioni:', error);
+            }
+        }
+
+        // Verifica connessione al server
+        let serverReady = false;
+        function checkServerConnection() {
+            fetch('http://localhost:3000/api/count')
+                .then(res => res.json())
+                .then(() => {
+                    serverReady = true;
+                    console.log('✅ Connesso al server');
+                    updateCounter();
+                })
+                .catch(err => {
+                    console.error('❌ Server non raggiungibile:', err);
+                    alert('⚠️ Server non avviato! Esegui: npm start');
+                });
+        }
+
+        // Imposta la data odierna come default
+        document.getElementById('data').valueAsDate = new Date();
+
+        // Aggiorna bandiera quando cambia la lingua
+        const linguaSelect = document.getElementById('lingua');
+        const flagPreview = document.getElementById('flag-preview');
+        const flagMap = { it: 'it', en: 'gb', de: 'de' };
+        
+        linguaSelect.addEventListener('change', function() {
+            const selectedLang = this.value;
+            flagPreview.className = `fi fi-${flagMap[selectedLang]}`;
+        });
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!serverReady) {
+                alert('Server non ancora pronto, attendi...');
+                return;
+            }
+            
+            // Raccogli i dati dal form
+            const nomeCliente = document.getElementById('nome').value;
+            const telCliente = document.getElementById('tel').value;
+            const modello = document.getElementById('modello').value;
+            const serialNumber = document.getElementById('serialNumber').value;
+            const data = document.getElementById('data').value;
+            const scadenza = document.getElementById('scadenza').value;
+            const lingua = document.getElementById('lingua').value;
+            
+            // Formatta la data in formato italiano
+            const dataObj = new Date(data);
+            const dataIta = dataObj.toLocaleDateString('it-IT');
+            const scadenzaObj = new Date(scadenza);
+            const scadenzaIta = scadenzaObj.toLocaleDateString('it-IT');
+            
+            // Salva tramite API prima di generare l'URL (per ottenere l'ID)
+            let recordId;
+            try {
+                const recordData = {
+                    nome: nomeCliente,
+                    tel: telCliente,
+                    modello: modello,
+                    serialNumber: serialNumber,
+                    data: dataIta,
+                    scadenza: scadenzaIta,
+                    url: '', // Sarà aggiornato dopo
+                    lingua: lingua
+                };
+                console.log('Salvando record:', recordData);
+                const response = await api.add(recordData);
+                recordId = response.id;
+                console.log('Record salvato con ID:', recordId, response);
+                await updateCounter();
+            } catch (error) {
+                console.error('Errore salvataggio:', error);
+                alert('Errore nel salvataggio dei dati. Server non raggiungibile?');
+                return;
+            }
+            
+            // Crea l'URL con solo l'ID del record
+            const baseUrl = window.location.origin + '/info';
+            const url = `${baseUrl}?id=${recordId}`;
+            
+            // Aggiorna il record con l'URL generato
+            try {
+                const updateData = {
+                    nome: nomeCliente,
+                    tel: telCliente,
+                    modello: modello,
+                    serialNumber: serialNumber,
+                    data: dataIta,
+                    scadenza: scadenzaIta,
+                    url: url,
+                    lingua: lingua
+                };
+                console.log('Aggiornando record con URL:', updateData);
+                await fetch(`/api/manutenzioni/${recordId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+            } catch (error) {
+                console.error('Errore aggiornamento URL:', error);
+            }
+            
+            // Pulisci il QR code precedente
+            qrcodeDiv.innerHTML = '';
+            
+            // Genera il QR code
+            new QRCode(qrcodeDiv, {
+                text: url,
+                width: 256,
+                height: 256,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Mostra il risultato
+            form.style.display = 'none';
+            resultDiv.style.display = 'block';
+        });
+
+        function resetForm() {
+            form.reset();
+            document.getElementById('data').valueAsDate = new Date();
+            form.style.display = 'block';
+            resultDiv.style.display = 'none';
+        }
+
+        // Aggiorna il contatore
+        async function updateCounter() {
+            if (!serverReady) return;
+            try {
+                const count = await api.count();
+                const counter = document.getElementById('counter');
+                if (counter) {
+                    counter.textContent = count;
+                }
+            } catch (error) {
+                console.error('Errore conteggio:', error);
+            }
+        }
+    </script>
+
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #result, #result * {
+                visibility: visible;
+            }
+            #result {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+            .actions {
+                display: none !important;
+            }
+        }
+    </style>
+</body>
+</html>

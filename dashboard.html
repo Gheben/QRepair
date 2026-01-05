@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Storico Manutenzioni</title>    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="api-client.js"></script>
+    <style>
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-small {
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-export {
+            background: #4facfe;
+            color: white;
+        }
+        
+        .btn-import {
+            background: #43e97b;
+            color: white;
+        }
+        
+        .btn-clear {
+            background: #f5576c;
+            color: white;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .records-table {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background: #f8f9fa;
+            padding: 6px 8px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 13px;
+            line-height: 1.2;
+        }
+        
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+            line-height: 1.2;
+        }
+        
+        tr {
+            height: 36px;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-action {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-view {
+            background: #4facfe;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #f5576c;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+        
+        .pagination button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        .pagination button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .pagination span {
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal-qr {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 1200px;">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h1>📊 Dashboard Manutenzioni</h1>
+                <div style="display: flex; gap: 10px;">
+                    <a href="settings" class="btn-small" style="background: #6c757d; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600;">⚙️ Impostazioni</a>
+                    <a href="index" class="btn-small btn-export">← Torna al Generatore</a>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-records">0</div>
+                    <div class="stat-label">Totale Manutenzioni</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                    <div class="stat-number" id="this-month">0</div>
+                    <div class="stat-label">Questo Mese</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="stat-number" id="unique-clients">0</div>
+                    <div class="stat-label">Clienti Unici</div>
+                </div>
+            </div>
+            
+            <div class="dashboard-header">
+                <div class="search-box">
+                    <input type="text" id="search" placeholder="🔍 Cerca per nome, telefono, modello o S/N...">
+                </div>
+                <div class="export-buttons">
+                    <a href="users" class="btn-small" style="background: #10b981; color: white; text-decoration: none; display: inline-block;">👥 Gestione Utenti</a>
+                    <button onclick="exportToCSV()" class="btn-small btn-export">📥 Esporta CSV</button>
+                    <button onclick="exportToJSON()" class="btn-small btn-export">📥 Esporta JSON</button>
+                    <button onclick="importData()" class="btn-small btn-import">📤 Importa</button>
+                    <button onclick="clearAll()" class="btn-small btn-clear">🗑️ Cancella Tutto</button>
+                    <button onclick="logout()" class="btn-small" style="background: #ef4444; color: white;">🚪 Logout</button>
+                </div>
+            </div>
+            
+            <div class="records-table">
+                <div id="table-container"></div>
+                <div class="pagination" id="pagination" style="display: none;">
+                    <button id="prev-btn" onclick="previousPage()">← Precedente</button>
+                    <span id="page-info">Pagina 1 di 1</span>
+                    <button id="next-btn" onclick="nextPage()">Successivo →</button>
+                </div>
+            </div>
+            
+            <footer>
+                <p>Powered by <strong>Guido Ballarini</strong></p>
+                <p>&copy; 2026 - Tutti i diritti riservati</p>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Modal per visualizzare QR -->
+    <div id="qr-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">QR Code</h2>
+            <div class="modal-qr" id="modal-qr"></div>
+            <p id="modal-info"></p>
+            <button onclick="closeModal()" class="btn btn-secondary">Chiudi</button>
+            <button onclick="printQR()" class="btn btn-print">🖨️ Stampa</button>
+        </div>
+    </div>
+    
+    <!-- Modal per aggiornare data manutenzione -->
+    <div id="maintenance-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close" onclick="closeMaintenanceModal()">&times;</span>
+            <h2>🔧 Manutenzione Eseguita</h2>
+            <p style="margin-bottom: 10px;">Aggiorna la data dell'ultima manutenzione</p>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Cliente:</label>
+                <input type="text" id="update-cliente" readonly style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f5f5f5;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Modello:</label>
+                <input type="text" id="update-modello" readonly style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f5f5f5;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">S/N:</label>
+                <input type="text" id="update-serialnumber" readonly style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f5f5f5;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nuova Data Manutenzione:</label>
+                <input type="date" id="update-data" required style="width: 100%; padding: 8px; border: 2px solid #667eea; border-radius: 8px; font-size: 14px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nuova Data Scadenza:</label>
+                <input type="date" id="update-scadenza" required style="width: 100%; padding: 8px; border: 2px solid #667eea; border-radius: 8px; font-size: 14px;">
+                <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">⚠️ La scadenza deve essere successiva alla data di manutenzione</small>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="saveMaintenanceUpdate()" class="btn btn-primary" style="flex: 1;">✅ Salva</button>
+                <button onclick="closeMaintenanceModal()" class="btn" style="flex: 1; background: #ccc;">❌ Annulla</button>
+            </div>
+        </div>
+    </div>
+    
+    <input type="file" id="file-input" accept=".json" style="display: none;">
+    
+    <script>
+        let allRecords = [];
+        let serverReady = false;
+        let currentPage = 1;
+        const recordsPerPage = 5;
+        let filteredRecords = [];
+        
+        // Verifica autenticazione
+        fetch('http://localhost:3000/api/auth/check')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.authenticated) {
+                    window.location.href = '/login';
+                } else {
+                    // Verifica connessione al server
+                    fetch('http://localhost:3000/api/count')
+                        .then(res => res.json())
+                        .then(() => {
+                            serverReady = true;
+                            console.log('✅ Connesso al server');
+                            loadRecords();
+                        })
+                        .catch(err => {
+                            console.error('❌ Server non raggiungibile:', err);
+                            alert('⚠️ Server non avviato! Esegui: npm start');
+                        });
+                }
+            })
+            .catch(() => window.location.href = '/login');
+        
+        async function loadRecords() {
+            if (!serverReady) return;
+            try {
+                allRecords = await api.getAll();
+                filteredRecords = allRecords;
+                currentPage = 1;
+                updateStats();
+                renderTable(filteredRecords);
+            } catch (error) {
+                console.error('Errore caricamento records:', error);
+            }
+        }
+        
+        async function updateStats() {
+            if (!serverReady) return;
+            try {
+                const stats = await api.getStats();
+                document.getElementById('total-records').textContent = stats.total;
+                document.getElementById('this-month').textContent = stats.thisMonth;
+                document.getElementById('unique-clients').textContent = stats.uniqueClients;
+            } catch (error) {
+                console.error('Errore calcolo stats:', error);
+            }
+        }
+        
+        function renderTable(records) {
+            const container = document.getElementById('table-container');
+            const pagination = document.getElementById('pagination');
+            
+            if (records.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <h3>Nessuna manutenzione salvata</h3>
+                        <p>Inizia a generare QR code per vedere lo storico qui</p>
+                        <a href="index" class="btn btn-primary" style="max-width: 300px; margin: 20px auto;">Crea il primo QR Code</a>
+                    </div>
+                `;
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            // Calcola paginazione
+            const totalPages = Math.ceil(records.length / recordsPerPage);
+            const startIndex = (currentPage - 1) * recordsPerPage;
+            const endIndex = startIndex + recordsPerPage;
+            const paginatedRecords = records.slice(startIndex, endIndex);
+            
+            // Mostra/nascondi paginazione
+            if (totalPages > 1) {
+                pagination.style.display = 'flex';
+                document.getElementById('page-info').textContent = `Pagina ${currentPage} di ${totalPages}`;
+                document.getElementById('prev-btn').disabled = currentPage === 1;
+                document.getElementById('next-btn').disabled = currentPage === totalPages;
+            } else {
+                pagination.style.display = 'none';
+            }
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;"></th>
+                            <th>Nome Cliente</th>
+                            <th>Telefono</th>
+                            <th>Modello</th>
+                            <th>S/N</th>
+                            <th>Data Manutenzione</th>
+                            <th>Scadenza</th>
+                            <th>Creato il</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            paginatedRecords.forEach((record, pageIndex) => {
+                const actualIndex = startIndex + pageIndex;
+                const createdDate = new Date(record.dataCreazione).toLocaleDateString('it-IT');
+                const langFlagClasses = { it: 'it', en: 'gb', de: 'de' };
+                const flagClass = langFlagClasses[record.lingua || 'it'] || 'it';
+                const flag = `<span class="fi fi-${flagClass}" style="font-size: 20px;"></span>`;
+                
+                // Calcola stato scadenza
+                let statusDot = '';
+                let scadenzaText = '-';
+                if (record.scadenza) {
+                    scadenzaText = record.scadenza;
+                    const scadenzaParts = record.scadenza.split('/');
+                    const scadenzaDate = new Date(scadenzaParts[2], scadenzaParts[1] - 1, scadenzaParts[0]);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    if (scadenzaDate >= today) {
+                        statusDot = '<span style="font-size: 18px; color: #10b981;">●</span>'; // Verde
+                    } else {
+                        statusDot = '<span style="font-size: 18px; color: #ef4444;">●</span>'; // Rosso
+                    }
+                } else {
+                    statusDot = '<span style="font-size: 18px; color: #ccc;">●</span>'; // Grigio se non c'è scadenza
+                }
+                
+                html += `
+                    <tr>
+                        <td style="text-align: center;">${statusDot}</td>
+                        <td><strong>${record.nome}</strong></td>
+                        <td>${record.tel}</td>
+                        <td>${record.modello || '-'}</td>
+                        <td>${record.serialNumber || '-'}</td>
+                        <td>${record.data}</td>
+                        <td>${scadenzaText}</td>
+                        <td>${createdDate}</td>
+                        <td>
+                            <div class="action-buttons">
+                                ${flag}
+                                <button onclick="updateMaintenance(${actualIndex})" class="btn-action" style="background: transparent; color: #fbbf24; padding: 4px 8px; border: none; cursor: pointer; font-size: 18px;" title="Manutenzione eseguita">🔧</button>
+                                <button onclick="viewQR(${actualIndex})" class="btn-action btn-view" style="margin-left: auto;">👁️ Vedi QR</button>
+                                <button onclick="deleteRecord(${actualIndex})" class="btn-action btn-delete">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function nextPage() {
+            currentPage++;
+            renderTable(filteredRecords);
+        }
+        
+        function previousPage() {
+            currentPage--;
+            renderTable(filteredRecords);
+        }
+        
+        function viewQR(index) {
+            const record = filteredRecords[index];
+            const modal = document.getElementById('qr-modal');
+            const modalQR = document.getElementById('modal-qr');
+            
+            // Salva l'ID del record nel modal per riferimento futuro
+            modal.dataset.recordId = record.id;
+            
+            document.getElementById('modal-title').textContent = record.nome;
+            document.getElementById('modal-info').innerHTML = `
+                📞 ${record.tel}<br>
+                🔧 ${record.modello || 'N/D'}<br>
+                � S/N: ${record.serialNumber || 'N/D'}<br>
+                �📅 ${record.data}
+            `;
+            
+            // Genera l'URL se non esiste o se è vuoto
+            let qrUrl = record.url;
+            if (!qrUrl || qrUrl.trim() === '') {
+                const baseUrl = window.location.origin + '/info';
+                qrUrl = `${baseUrl}?id=${record.id}`;
+                
+                // Aggiorna il record nel database con il nuovo URL
+                fetch(`/api/manutenzioni/${record.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...record, url: qrUrl })
+                }).catch(err => console.error('Errore aggiornamento URL:', err));
+            }
+            
+            modalQR.innerHTML = '';
+            new QRCode(modalQR, {
+                text: qrUrl,
+                width: 256,
+                height: 256,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            modal.classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('qr-modal').classList.remove('active');
+        }
+        
+        function printQR() {
+            window.print();
+        }
+        
+        let currentMaintenanceIndex = null;
+        
+        function updateMaintenance(index) {
+            const record = filteredRecords[index];
+            currentMaintenanceIndex = index;
+            
+            document.getElementById('update-cliente').value = record.nome;
+            document.getElementById('update-modello').value = record.modello || '-';
+            document.getElementById('update-serialnumber').value = record.serialNumber || '-';
+            
+            // Imposta la data di oggi come default per la manutenzione
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            document.getElementById('update-data').value = todayStr;
+            
+            // Imposta la scadenza suggerita: +1 anno dalla data di oggi
+            const nextYear = new Date(today);
+            nextYear.setFullYear(nextYear.getFullYear() + 1);
+            const nextYearStr = nextYear.toISOString().split('T')[0];
+            document.getElementById('update-scadenza').value = nextYearStr;
+            
+            document.getElementById('maintenance-modal').style.display = 'flex';
+        }
+        
+        function closeMaintenanceModal() {
+            document.getElementById('maintenance-modal').style.display = 'none';
+            currentMaintenanceIndex = null;
+        }
+        
+        async function saveMaintenanceUpdate() {
+            if (currentMaintenanceIndex === null) return;
+            
+            const record = filteredRecords[currentMaintenanceIndex];
+            const newDataInput = document.getElementById('update-data').value;
+            const newScadenzaInput = document.getElementById('update-scadenza').value;
+            
+            if (!newDataInput) {
+                alert('⚠️ Inserisci una data di manutenzione valida');
+                return;
+            }
+            
+            if (!newScadenzaInput) {
+                alert('⚠️ Inserisci una data di scadenza valida');
+                return;
+            }
+            
+            // Validazione: scadenza deve essere successiva alla data manutenzione
+            const dataManutenzione = new Date(newDataInput);
+            const dataScadenza = new Date(newScadenzaInput);
+            
+            if (dataScadenza <= dataManutenzione) {
+                alert('⚠️ La data di scadenza deve essere successiva alla data di manutenzione!');
+                return;
+            }
+            
+            // Converti da YYYY-MM-DD a DD/MM/YYYY
+            const [yearData, monthData, dayData] = newDataInput.split('-');
+            const newData = `${dayData}/${monthData}/${yearData}`;
+            
+            const [yearScad, monthScad, dayScad] = newScadenzaInput.split('-');
+            const newScadenza = `${dayScad}/${monthScad}/${yearScad}`;
+            
+            try {
+                const response = await fetch(`/api/manutenzioni/${record.id}/data`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: newData, scadenza: newScadenza })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Date manutenzione e scadenza aggiornate!');
+                    closeMaintenanceModal();
+                    loadRecords(); // Ricarica la tabella
+                } else {
+                    alert('❌ Errore: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Errore aggiornamento:', error);
+                alert('❌ Errore di connessione al server');
+            }
+        }
+        
+        async function deleteRecord(index) {
+            if (!confirm('Sei sicuro di voler eliminare questo record?')) return;
+            
+            try {
+                const record = filteredRecords[index];
+                await api.delete(record.id);
+                await loadRecords();
+            } catch (error) {
+                console.error('Errore eliminazione:', error);
+                alert('Errore durante l\'eliminazione');
+            }
+        }
+        
+        async function clearAll() {
+            if (!confirm('⚠️ ATTENZIONE: Questo cancellerà TUTTI i record salvati. Sei sicuro?')) return;
+            if (!confirm('Sei DAVVERO sicuro? Questa azione è irreversibile!')) return;
+            
+            try {
+                await api.clear();
+                allRecords = [];
+                await loadRecords();
+            } catch (error) {
+                console.error('Errore cancellazione:', error);
+                alert('Errore durante la cancellazione');
+            }
+        }
+        
+        function exportToCSV() {
+            if (allRecords.length === 0) {
+                alert('Nessun dato da esportare');
+                return;
+            }
+            
+            let csv = 'Nome,Telefono,Modello,S/N,Data Manutenzione,Data Creazione\n';
+            allRecords.forEach(r => {
+                csv += `"${r.nome}","${r.tel}","${r.modello}","${r.serialNumber || ''}","${r.data}","${r.dataCreazione}"\n`;
+            });
+            
+            downloadFile(csv, 'manutenzioni.csv', 'text/csv');
+        }
+        
+        async function exportToJSON() {
+            if (allRecords.length === 0) {
+                alert('Nessun dato da esportare');
+                return;
+            }
+            
+            try {
+                const data = await api.exportData();
+                const json = JSON.stringify(data, null, 2);
+                downloadFile(json, `manutenzioni_${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+            } catch (error) {
+                console.error('Errore export:', error);
+                alert('Errore durante l\'esportazione');
+            }
+        }
+        
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function importData() {
+            document.getElementById('file-input').click();
+        }
+        
+        document.getElementById('file-input').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    if (confirm(`Trovati ${imported.length} record. Vuoi importarli? (Si aggiungeranno a quelli esistenti)`)) {
+                        await api.importData(imported);
+                        await loadRecords();
+                        alert('✅ Importazione completata!');
+                    }
+                } catch(err) {
+                    console.error('Errore import:', err);
+                    alert('❌ Errore nell\'importazione. File non valido.');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+        
+        // Ricerca
+        let searchTimeout;
+        document.getElementById('search').addEventListener('input', async function(e) {
+            const query = e.target.value.toLowerCase();
+            
+            // Debounce per evitare troppe richieste
+            clearTimeout(searchTimeout);
+            
+            if (query === '') {
+                filteredRecords = allRecords;
+                currentPage = 1;
+                renderTable(filteredRecords);
+                return;
+            }
+            
+            searchTimeout = setTimeout(async () => {
+                try {
+                    filteredRecords = await api.search(query);
+                    currentPage = 1;
+                    renderTable(filteredRecords);
+                } catch (error) {
+                    console.error('Errore ricerca:', error);
+                }
+            }, 300);
+        });
+        
+        // Funzione logout
+        async function logout() {
+            try {
+                await fetch('http://localhost:3000/api/auth/logout', { method: 'POST' });
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Errore logout:', error);
+                window.location.href = '/login';
+            }
+        }
+    </script>
+    
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #qr-modal, #qr-modal * {
+                visibility: visible;
+            }
+            #qr-modal {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+            }
+            button {
+                display: none !important;
+            }
+        }
+    </style>
+</body>
+</html>

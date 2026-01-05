@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impostazioni Fornitore</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>⚙️ Impostazioni Fornitore</h1>
+            <p class="info-text">Inserisci i tuoi dati aziendali. Questi verranno mostrati ai clienti quando scansionano il QR code.</p>
+            
+            <form id="settings-form">
+                <div class="form-group">
+                    <label for="nomeAzienda">Nome Azienda/Fornitore</label>
+                    <input type="text" id="nomeAzienda" name="nomeAzienda" required placeholder="es. GB Service">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Numero di Telefono</label>
+                    <input type="tel" id="telefono" name="telefono" required placeholder="es. 3331234567" pattern="[0-9]{9,10}">
+                    <small style="color: #666;">Solo numeri, senza prefisso +39</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="logo">Logo Aziendale (opzionale)</label>
+                    <input type="file" id="logo" name="logo" accept="image/*" style="padding: 10px;">
+                    <small style="color: #666;">Il logo verrà mostrato nella pagina del QR code</small>
+                    <div id="logo-preview" style="margin-top: 10px; display: none;">
+                        <img id="logo-img" src="" alt="Logo" style="max-width: 80px; max-height: 80px; border-radius: 10px; border: 2px solid #e0e0e0;">
+                        <button type="button" onclick="removeLogo()" style="margin-left: 10px; padding: 5px 10px; background: #f5576c; color: white; border: none; border-radius: 5px; cursor: pointer;">🗑️ Rimuovi</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">💾 SALVA IMPOSTAZIONI</button>
+                    <a href="dashboard" class="btn" style="flex: 1; text-align: center; text-decoration: none; background: #6c757d;">↩️ Torna alla Dashboard</a>
+                </div>
+            </form>
+
+            <div id="success-message" style="display: none; margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 10px; color: #155724;">
+                ✅ Impostazioni salvate con successo!
+            </div>
+            
+            <footer>
+                <p>Powered by <strong>Guido Ballarini</strong></p>
+                <p>&copy; 2026 - Tutti i diritti riservati</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let currentLogo = null;
+        
+        // Verifica autenticazione
+        fetch('http://localhost:3000/api/auth/check')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.authenticated) {
+                    window.location.href = '/login';
+                } else {
+                    loadSettings();
+                }
+            })
+            .catch(() => window.location.href = '/login');
+        
+        // Gestione upload logo
+        document.getElementById('logo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Ridimensiona l'immagine
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const maxSize = 200;
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > height) {
+                            if (width > maxSize) {
+                                height *= maxSize / width;
+                                width = maxSize;
+                            }
+                        } else {
+                            if (height > maxSize) {
+                                width *= maxSize / height;
+                                height = maxSize;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        currentLogo = canvas.toDataURL('image/jpeg', 0.8);
+                        document.getElementById('logo-img').src = currentLogo;
+                        document.getElementById('logo-preview').style.display = 'block';
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        function removeLogo() {
+            currentLogo = null;
+            document.getElementById('logo').value = '';
+            document.getElementById('logo-preview').style.display = 'none';
+        }
+        
+        // Carica impostazioni esistenti
+        async function loadSettings() {
+            try {
+                const response = await fetch(`${API_BASE}/settings`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    document.getElementById('nomeAzienda').value = result.data.nomeAzienda || '';
+                    document.getElementById('telefono').value = result.data.telefono || '';
+                    
+                    if (result.data.logo) {
+                        currentLogo = result.data.logo;
+                        document.getElementById('logo-img').src = currentLogo;
+                        document.getElementById('logo-preview').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Errore caricamento impostazioni:', error);
+            }
+        }
+        
+        // Salva impostazioni
+        document.getElementById('settings-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nomeAzienda = document.getElementById('nomeAzienda').value;
+            const telefono = document.getElementById('telefono').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        nomeAzienda, 
+                        telefono,
+                        logo: currentLogo 
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const successMsg = document.getElementById('success-message');
+                    successMsg.style.display = 'block';
+                    setTimeout(() => {
+                        successMsg.style.display = 'none';
+                    }, 3000);
+                } else {
+                    alert('Errore nel salvataggio: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Errore salvataggio:', error);
+                alert('Errore nel salvataggio delle impostazioni');
+            }
+        });
+    </script>
+</body>
+</html>

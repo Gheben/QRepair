@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Utenti - QR Code Manutenzioni</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>👥 Gestione Utenti</h1>
+            
+            <div class="dashboard-header">
+                <div class="export-buttons">
+                    <a href="dashboard" class="btn-small btn-export">← Torna alla Dashboard</a>
+                    <button onclick="showAddUserModal()" class="btn-small" style="background: #10b981; color: white;">➕ Nuovo Utente</button>
+                </div>
+            </div>
+            
+            <div id="users-container"></div>
+            
+            <footer>
+                <p>Powered by <strong>Guido Ballarini</strong></p>
+                <p>&copy; 2026 - Tutti i diritti riservati</p>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Modal Nuovo/Modifica Utente -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="closeUserModal()">&times;</span>
+            <h2 id="modal-title">➕ Nuovo Utente</h2>
+            <form id="userForm">
+                <input type="hidden" id="user-id">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Nome Completo:</label>
+                    <input type="text" id="user-nome" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Username:</label>
+                    <input type="text" id="user-username" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Password:</label>
+                    <input type="password" id="user-password" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <small style="color: #666; font-size: 12px;">Lascia vuoto per non modificare la password</small>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">✅ Salva</button>
+                    <button type="button" onclick="closeUserModal()" class="btn" style="flex: 1; background: #ccc;">❌ Annulla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let users = [];
+        
+        // Verifica autenticazione
+        fetch('/api/auth/check')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.authenticated) {
+                    window.location.href = '/login';
+                } else {
+                    loadUsers();
+                }
+            })
+            .catch(() => window.location.href = '/login');
+        
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users');
+                const data = await response.json();
+                if (data.success) {
+                    users = data.data;
+                    renderUsers();
+                }
+            } catch (error) {
+                console.error('Errore caricamento utenti:', error);
+            }
+        }
+        
+        function renderUsers() {
+            const container = document.getElementById('users-container');
+            
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <div style="font-size: 64px;">👤</div>
+                        <h3>Nessun utente trovato</h3>
+                        <p>Clicca su "Nuovo Utente" per aggiungerne uno</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Username</th>
+                            <th>Creato il</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            users.forEach(user => {
+                const createdDate = new Date(user.createdAt).toLocaleDateString('it-IT');
+                html += `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td><strong>${user.nome}</strong></td>
+                        <td>${user.username}</td>
+                        <td>${createdDate}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button onclick="editUser(${user.id})" class="btn-action btn-view">✏️ Modifica</button>
+                                <button onclick="deleteUser(${user.id})" class="btn-action btn-delete">🗑️ Elimina</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function showAddUserModal() {
+            document.getElementById('modal-title').textContent = '➕ Nuovo Utente';
+            document.getElementById('userForm').reset();
+            document.getElementById('user-id').value = '';
+            document.getElementById('user-password').required = true;
+            document.getElementById('user-modal').classList.add('active');
+        }
+        
+        function editUser(id) {
+            const user = users.find(u => u.id === id);
+            if (!user) return;
+            
+            document.getElementById('modal-title').textContent = '✏️ Modifica Utente';
+            document.getElementById('user-id').value = user.id;
+            document.getElementById('user-nome').value = user.nome;
+            document.getElementById('user-username').value = user.username;
+            document.getElementById('user-password').value = '';
+            document.getElementById('user-password').required = false;
+            document.getElementById('user-modal').classList.add('active');
+        }
+        
+        function closeUserModal() {
+            document.getElementById('user-modal').classList.remove('active');
+        }
+        
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('user-id').value;
+            const nome = document.getElementById('user-nome').value;
+            const username = document.getElementById('user-username').value;
+            const password = document.getElementById('user-password').value;
+            
+            const data = { nome, username };
+            if (password) data.password = password;
+            
+            try {
+                const url = id ? `/api/users/${id}` : '/api/users';
+                const method = id ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    closeUserModal();
+                    loadUsers();
+                    alert(id ? '✅ Utente aggiornato' : '✅ Utente creato');
+                } else {
+                    alert('❌ ' + (result.error || 'Errore durante il salvataggio'));
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('❌ Errore di connessione');
+            }
+        });
+        
+        async function deleteUser(id) {
+            if (!confirm('Sei sicuro di voler eliminare questo utente?')) return;
+            
+            try {
+                const response = await fetch(`/api/users/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    loadUsers();
+                    alert('✅ Utente eliminato');
+                } else {
+                    alert('❌ ' + (result.error || 'Errore durante l\'eliminazione'));
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('❌ Errore di connessione');
+            }
+        }
+    </script>
+</body>
+</html>

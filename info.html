@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Manutenzione Dispositivo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="client-view">
+    <div class="container">
+        <div class="card client-card">
+            <div class="header-icon">🔧</div>
+            <h2 id="ditta">Service Provider</h2>
+            
+            <div class="info-section">
+                <p class="info-label" id="label-modello">Device Model:</p>
+                <p id="modello" class="info-value">-</p>
+            </div>
+            
+            <div class="info-section">
+                <p class="info-label" id="label-serialnumber">Serial Number:</p>
+                <p id="serialNumber" class="info-value">-</p>
+            </div>
+            
+            <div class="info-section">
+                <p class="info-label" id="label-data">Last Maintenance:</p>
+                <p id="data" class="info-value">-</p>
+            </div>
+            
+            <div class="info-section">
+                <p class="info-label" id="label-scadenza">Next Maintenance Due:</p>
+                <p id="scadenza" class="info-value" style="font-weight: bold;">-</p>
+            </div>
+
+            <hr class="divider">
+            
+            <p class="cta-text" id="cta-text">📅 Time for a service check?</p>
+            
+            <div class="action-buttons">
+                <a href="tel:3331234567" id="link-tel" class="btn btn-call">
+                    📞 CALL NOW
+                </a>
+                <a href="https://wa.me/393331234567" id="link-wa" class="btn btn-whatsapp">
+                    💬 SEND MESSAGE
+                </a>
+            </div>
+
+            <div class="footer-info">
+                <p id="footer-text">✅ This QR code was created by your trusted service provider</p>
+                <p class="small-text" id="footer-small">Keep this QR code for future maintenance</p>
+            </div>
+            
+            <footer>
+                <p>Powered by <strong>Guido Ballarini</strong></p>
+                <p>&copy; 2026 - Tutti i diritti riservati</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Traduzioni
+        const translations = {
+            it: {
+                title: 'Il tuo Fornitore di Fiducia',
+                modelLabel: '🔧 Modello Dispositivo:',
+                serialNumberLabel: '🔢 Numero Seriale (S/N):',
+                dateLabel: '📅 Ultima Manutenzione:',
+                scadenzaLabel: '⏰ Prossima Scadenza:',
+                ctaText: '📅 È tempo di una revisione?',
+                callBtn: '📞 CHIAMA ORA',
+                whatsappBtn: '💬 SCRIVI SU WHATSAPP',
+                footerText: '✅ Questo QR code è stato creato dal tuo fornitore di fiducia',
+                footerSmall: 'Conserva questo QR code per future manutenzioni',
+                whatsappMessage: 'Buongiorno, vorrei prenotare una manutenzione.',
+                invalidTitle: 'QR Code non valido',
+                invalidText: 'Questo QR code non contiene informazioni valide.',
+                invalidSmall: 'Assicurati di scansionare il QR code corretto fornito dal tuo fornitore.'
+            },
+            en: {
+                title: 'Your Trusted Service Provider',
+                modelLabel: '🔧 Device Model:',
+                serialNumberLabel: '🔢 Serial Number (S/N):',
+                dateLabel: '📅 Last Maintenance:',
+                scadenzaLabel: '⏰ Next Maintenance Due:',
+                ctaText: '📅 Time for a service check?',
+                callBtn: '📞 CALL NOW',
+                whatsappBtn: '💬 SEND MESSAGE',
+                footerText: '✅ This QR code was created by your trusted service provider',
+                footerSmall: 'Keep this QR code for future maintenance',
+                whatsappMessage: 'Hello, I would like to schedule a maintenance service.',
+                invalidTitle: 'Invalid QR Code',
+                invalidText: 'This QR code does not contain valid information.',
+                invalidSmall: 'Please scan the correct QR code provided by your service provider.'
+            },
+            de: {
+                title: 'Ihr vertrauenswürdiger Dienstleister',
+                modelLabel: '🔧 Gerätemodell:',
+                serialNumberLabel: '🔢 Seriennummer (S/N):',
+                dateLabel: '📅 Letzte Wartung:',
+                scadenzaLabel: '⏰ Nächste Wartung fällig:',
+                ctaText: '📅 Zeit für eine Inspektion?',
+                callBtn: '📞 JETZT ANRUFEN',
+                whatsappBtn: '💬 NACHRICHT SENDEN',
+                footerText: '✅ Dieser QR-Code wurde von Ihrem vertrauenswürdigen Dienstleister erstellt',
+                footerSmall: 'Bewahren Sie diesen QR-Code für zukünftige Wartungen auf',
+                whatsappMessage: 'Guten Tag, ich möchte einen Wartungstermin vereinbaren.',
+                invalidTitle: 'Ungültiger QR-Code',
+                invalidText: 'Dieser QR-Code enthält keine gültigen Informationen.',
+                invalidSmall: 'Bitte scannen Sie den korrekten QR-Code Ihres Dienstleisters.'
+            }
+        };
+        
+        // Funzione per renderizzare la pagina con i dati
+        function renderPage(nome, tel, modello, serialNumber, data, scadenza, nomeCliente, lang, t) {
+            // Determina saluto in base all'ora
+            const ora = new Date().getHours();
+            let saluto = '';
+            if (lang === 'it') {
+                saluto = ora >= 18 ? 'Buonasera' : 'Buongiorno';
+            } else if (lang === 'de') {
+                saluto = ora >= 18 ? 'Guten Abend' : 'Guten Tag';
+            } else {
+                saluto = ora >= 18 ? 'Good evening' : 'Good morning';
+            }
+            
+            // Aggiorna i contenuti della pagina con traduzioni
+            document.getElementById('ditta').innerText = nome;
+            document.getElementById('label-modello').innerText = t.modelLabel;
+            document.getElementById('modello').innerText = modello;
+            document.getElementById('label-serialnumber').innerText = t.serialNumberLabel;
+            document.getElementById('serialNumber').innerText = serialNumber || (lang === 'it' ? 'Non disponibile' : lang === 'de' ? 'Nicht verfügbar' : 'Not available');
+            document.getElementById('label-data').innerText = t.dateLabel;
+            document.getElementById('data').innerText = data;
+            document.getElementById('label-scadenza').innerText = t.scadenzaLabel;
+            
+            // Visualizza scadenza con colore in base allo stato e giorni rimanenti
+            if (scadenza) {
+                const scadenzaParts = scadenza.split('/');
+                const scadenzaDate = new Date(scadenzaParts[2], scadenzaParts[1] - 1, scadenzaParts[0]);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const diffTime = scadenzaDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                const scadenzaEl = document.getElementById('scadenza');
+                
+                if (diffDays >= 0) {
+                    // Scadenza futura - Verde
+                    const giornoText = lang === 'it' ? 'giorno' : (lang === 'de' ? 'Tag' : 'day');
+                    const giorniText = lang === 'it' ? 'giorni' : (lang === 'de' ? 'Tage' : 'days');
+                    const rimangonoText = lang === 'it' ? 'Rimangono' : (lang === 'de' ? 'Verbleibend' : 'Remaining');
+                    
+                    const giornoLabel = diffDays === 1 ? giornoText : giorniText;
+                    scadenzaEl.innerHTML = `<div style="background: #d1fae5; padding: 10px 15px; border-radius: 8px; border: 2px solid #10b981; color: #047857; font-weight: bold;">${scadenza}<br><small style="font-size: 0.9em;">✅ ${rimangonoText} ${diffDays} ${giornoLabel}</small></div>`;
+                } else {
+                    // Scadenza passata - Rosso
+                    const scadutoText = lang === 'it' ? 'SCADUTO!' : (lang === 'de' ? 'ABGELAUFEN!' : 'EXPIRED!');
+                    scadenzaEl.innerHTML = `<div style="background: #fee2e2; padding: 10px 15px; border-radius: 8px; border: 2px solid #ef4444; color: #dc2626; font-weight: bold;">${scadenza}<br><small style="font-size: 0.9em;">⚠️ ${scadutoText}</small></div>`;
+                }
+            } else {
+                // Nessuna scadenza - visualizza messaggio
+                const scadenzaEl = document.getElementById('scadenza');
+                const nonDisponibileText = lang === 'it' ? 'Non specificata' : (lang === 'de' ? 'Nicht angegeben' : 'Not specified');
+                scadenzaEl.innerHTML = `<div style="background: #f3f4f6; padding: 10px 15px; border-radius: 8px; border: 2px solid #9ca3af; color: #6b7280; font-weight: bold;">${nonDisponibileText}</div>`;
+            }
+            
+            document.getElementById('cta-text').innerText = t.ctaText;
+            
+            // Pulisci il numero di telefono (rimuovi spazi, trattini, parentesi)
+            const cleanTel = tel.replace(/[\s\-\(\)]/g, '');
+            
+            // Aggiorna i pulsanti
+            const callBtn = document.getElementById('link-tel');
+            callBtn.href = "tel:" + cleanTel;
+            callBtn.innerHTML = t.callBtn;
+            
+            // Crea messaggio WhatsApp personalizzato con dati del dispositivo
+            let waMessage = '';
+            const clienteNome = nomeCliente || (lang === 'it' ? 'un cliente' : (lang === 'de' ? 'ein Kunde' : 'a customer'));
+            
+            if (lang === 'it') {
+                if (nomeCliente) {
+                    waMessage = `${saluto}, sono ${nomeCliente}, vorrei prenotare una manutenzione relativa a:\n\nDettagli:\n• Dispositivo: ${modello}\n• S/N: ${serialNumber || 'Non disponibile'}\n• Ultima manutenzione: ${data}\n• Scadenza: ${scadenza || 'Non specificata'}`;
+                } else {
+                    waMessage = `${saluto}, vorrei prenotare una manutenzione relativa a:\n\nDettagli:\n• Dispositivo: ${modello}\n• S/N: ${serialNumber || 'Non disponibile'}\n• Ultima manutenzione: ${data}\n• Scadenza: ${scadenza || 'Non specificata'}`;
+                }
+            } else if (lang === 'de') {
+                if (nomeCliente) {
+                    waMessage = `${saluto}, ich bin ${nomeCliente}, ich möchte einen Wartungstermin vereinbaren für:\n\nDetails:\n• Gerät: ${modello}\n• S/N: ${serialNumber || 'Nicht verfügbar'}\n• Letzte Wartung: ${data}\n• Fällig: ${scadenza || 'Nicht angegeben'}`;
+                } else {
+                    waMessage = `${saluto}, ich möchte einen Wartungstermin vereinbaren für:\n\nDetails:\n• Gerät: ${modello}\n• S/N: ${serialNumber || 'Nicht verfügbar'}\n• Letzte Wartung: ${data}\n• Fällig: ${scadenza || 'Nicht angegeben'}`;
+                }
+            } else {
+                if (nomeCliente) {
+                    waMessage = `${saluto}, I am ${nomeCliente}, I would like to schedule a maintenance service for:\n\nDetails:\n• Device: ${modello}\n• S/N: ${serialNumber || 'Not available'}\n• Last maintenance: ${data}\n• Due: ${scadenza || 'Not specified'}`;
+                } else {
+                    waMessage = `${saluto}, I would like to schedule a maintenance service for:\n\nDetails:\n• Device: ${modello}\n• S/N: ${serialNumber || 'Not available'}\n• Last maintenance: ${data}\n• Due: ${scadenza || 'Not specified'}`;
+                }
+            }
+            
+            const waBtn = document.getElementById('link-wa');
+            // Per WhatsApp rimuovi anche il + dal numero
+            const cleanTelWa = cleanTel.replace(/\+/g, '');
+            const waUrl = `https://wa.me/${cleanTelWa}?text=${encodeURIComponent(waMessage)}`;
+            
+            waBtn.href = waUrl;
+            waBtn.innerHTML = t.whatsappBtn;
+            
+            // Aggiorna footer
+            document.getElementById('footer-text').innerText = t.footerText;
+            document.getElementById('footer-small').innerText = t.footerSmall;
+            
+            // Aggiorna il titolo della pagina
+            document.title = `${nome} - ${t.dateLabel.replace(':', '')}`;
+        }
+        
+        // Leggi l'ID del record dall'URL
+        const params = new URLSearchParams(window.location.search);
+        const recordId = params.get('id');
+        
+        if (recordId) {
+            // Carica i dati dal database tramite API
+            fetch(`/api/manutenzioni/${recordId}`)
+                .then(res => res.json())
+                .then(async result => {
+                    if (!result.success || !result.data) {
+                        throw new Error('Record non trovato');
+                    }
+                    
+                    const record = result.data;
+                    const lang = record.lingua || 'it';
+                    const t = translations[lang] || translations.it;
+                    
+                    // Carica le impostazioni del fornitore
+                    const settingsRes = await fetch('/api/settings', { cache: 'no-cache' });
+                    const settingsData = await settingsRes.json();
+                    const settings = settingsData.data || settingsData;
+                    
+                    const nome = settings.nomeAzienda || 'Service Provider';
+                    const tel = settings.telefono || '';
+                    const modello = record.modello || (lang === 'it' ? 'Non specificato' : lang === 'de' ? 'Nicht angegeben' : 'Not specified');
+                    const serialNumber = record.serialNumber || '';
+                    const data = record.data;
+                    const scadenza = record.scadenza;
+                    const nomeCliente = record.nome || '';
+                    
+                    // Carica il logo se disponibile
+                    if (settings.logo) {
+                        const headerIcon = document.querySelector('.header-icon');
+                        headerIcon.innerHTML = `<img src="${settings.logo}" alt="Logo" style="max-width: 80px; max-height: 80px; object-fit: contain;">`;
+                    }
+                    
+                    renderPage(nome, tel, modello, serialNumber, data, scadenza, nomeCliente, lang, t);
+                })
+                .catch(err => {
+                    console.error('Errore caricamento record:', err);
+                    const t = translations.it;
+                    document.querySelector('.client-card').innerHTML = `
+                        <div class="header-icon">⚠️</div>
+                        <h2>${t.invalidTitle}</h2>
+                        <p>${t.invalidText}</p>
+                        <p class="small-text">${t.invalidSmall}</p>
+                    `;
+                });
+        } else {
+            // Fallback: leggi parametri dall'URL (per retrocompatibilità)
+            const lang = params.get('lang') || 'it';
+            const t = translations[lang] || translations.it;
+            
+            // Carica sempre il logo dalle impostazioni
+            fetch('/api/settings', { cache: 'no-cache' })
+                .then(res => res.json())
+                .then(settingsData => {
+                    const settings = settingsData.data || settingsData;
+                    if (settings.logo) {
+                        const headerIcon = document.querySelector('.header-icon');
+                        headerIcon.innerHTML = `<img src="${settings.logo}" alt="Logo" style="max-width: 80px; max-height: 80px; object-fit: contain;">`;
+                    }
+                })
+                .catch(err => console.error('Errore caricamento logo:', err));
+            
+            if (params.has('nome')) {
+                const nome = params.get('nome');
+                const tel = params.get('tel');
+                const modello = params.get('modello') || (lang === 'it' ? 'Non specificato' : lang === 'de' ? 'Nicht angegeben' : 'Not specified');
+                const serialNumber = params.get('serialNumber') || '';
+                const data = params.get('data');
+                const scadenza = params.get('scadenza');
+                const nomeCliente = params.get('cliente') || '';
+                
+                renderPage(nome, tel, modello, serialNumber, data, scadenza, nomeCliente, lang, t);
+            } else {
+                // Se non ci sono parametri, mostra un messaggio di errore
+                document.querySelector('.client-card').innerHTML = `
+                    <div class="header-icon">⚠️</div>
+                    <h2>${t.invalidTitle}</h2>
+                    <p>${t.invalidText}</p>
+                    <p class="small-text">${t.invalidSmall}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

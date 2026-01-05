@@ -1,0 +1,25 @@
+# Ignora node_modules
+node_modules/
+
+# Ignora il database SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Ignora file di log
+*.log
+npm-debug.log*
+
+# Ignora file di sistema
+.DS_Store
+Thumbs.db
+
+# Ignora file IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignora file di backup
+*.bak
+*.tmp
