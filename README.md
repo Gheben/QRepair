@@ -20,6 +20,8 @@
 
 **QRepair** is a complete system for managing device maintenance through QR Codes. Ideal for technical assistance companies, maintenance providers, and service providers who want to digitize and simplify maintenance intervention tracking.
 
+> 🎭 **Try the Demo:** [demo-qrepair.ballarini.app](https://demo-qrepair.ballarini.app) (login: `demo` / `demo`)
+
 ### ✨ Key Features
 
 - 🔐 **Authentication System** - Secure login with user and session management
