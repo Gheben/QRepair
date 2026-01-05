@@ -97,6 +97,11 @@ function requireAuth(req, res, next) {
     }
 }
 
+// Rotta principale: redirect alla login
+app.get('/', (req, res) => {
+    res.redirect('/login');
+});
+
 // Middleware per servire pagine HTML senza estensione
 app.use((req, res, next) => {
     if (!req.path.includes('.') && req.path !== '/') {
@@ -813,8 +818,8 @@ app.listen(PORT, () => {
 ║   📊 API: http://localhost:${PORT}/api            ║
 ║                                                ║
 ║   Apri nel browser:                            ║
-║   → http://localhost:${PORT}/index.html           ║
-║   → http://localhost:${PORT}/dashboard.html       ║
+║   → http://localhost:${PORT}/login                ║
+║   → http://localhost:${PORT}/dashboard            ║
 ║                                                ║
 ╚════════════════════════════════════════════════╝
     `);
