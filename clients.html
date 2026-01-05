@@ -422,9 +422,9 @@
                         <td>${lastDate}</td>
                         <td>
                             <div class="action-buttons">
-                                ${maintenanceCount > 0 ? `<button onclick="viewMaintenances(${client.id})" class="btn-action btn-view">👁️ Maintenances</button>` : ''}
-                                <button onclick="editClient(${client.id})" class="btn-action btn-edit">✏️</button>
-                                <button onclick="deleteClient(${client.id}, '${fullName}')" class="btn-action btn-delete">🗑️</button>
+                                ${maintenanceCount > 0 ? `<button onclick="viewMaintenances('${client.id}')" class="btn-action btn-view">👁️ Maintenances</button>` : ''}
+                                <button onclick="editClient('${client.id}')" class="btn-action btn-edit">✏️</button>
+                                <button onclick="deleteClient('${client.id}', '${fullName}')" class="btn-action btn-delete">🗑️</button>
                             </div>
                         </td>
                     </tr>
