@@ -83,6 +83,44 @@ docker-compose up -d --build
 
 ---
 
+### 🎭 Demo Mode
+
+QRepair includes a demo mode for testing and demonstrations. In demo mode:
+- Default user: `demo` / `demo` (credentials cannot be changed)
+- User management is disabled (cannot create, edit, or delete users)
+- All other features work normally
+
+**Deploy Demo Instance:**
+
+```bash
+# Clone the repository
+git clone https://github.com/Gheben/QRepair.git
+cd QRepair
+
+# Create required directories and files for demo
+mkdir -p data-demo uploads-demo
+touch manutenzioni-demo.db settings-demo.json
+
+# Start demo instance (uses port 5127)
+docker-compose -f docker-compose.demo.yml up -d
+
+# View logs
+docker logs qrepair-demo
+```
+
+Access the demo at `http://localhost:5127` with credentials: `demo` / `demo`
+
+**Production Demo Deployment:**
+
+For a public demo instance (e.g., demo.qrepair.ballarini.app):
+
+1. Deploy using demo compose file
+2. Configure reverse proxy to point to port 5127
+3. Set `DEMO_MODE=true` environment variable
+4. Users can test all features except user management
+
+---
+
 ### Option 2: Manual Installation
 
 **Prerequisites:**
@@ -117,12 +155,23 @@ docker-compose up -d --build
 
 ## 🔑 First Access
 
+### Production Mode
+
 On first startup, the system automatically creates an administrator user:
 
 - **Username**: `admin`
 - **Password**: `admin`
 
 > ⚠️ **IMPORTANT**: Change the password immediately after first login!
+
+### Demo Mode
+
+When `DEMO_MODE=true` is set, the system creates a demo user:
+
+- **Username**: `demo`
+- **Password**: `demo`
+
+> 🎭 **NOTE**: In demo mode, user management is disabled. Password and user settings cannot be modified.
 
 ---
 

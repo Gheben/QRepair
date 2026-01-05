@@ -35,14 +35,29 @@ db.init().then(async () => {
 async function createDefaultAdmin() {
     try {
         const userCount = db.countUsers();
+        const demoMode = process.env.DEMO_MODE === 'true';
+        
         if (userCount === 0) {
-            const hashedPassword = await bcrypt.hash('admin', 10);
-            db.addUser({
-                username: 'admin',
-                password: hashedPassword,
-                nome: 'Amministratore'
-            });
-            console.log('✅ Utente admin creato (username: admin, password: admin)');
+            if (demoMode) {
+                // Modalità demo: crea utente demo/demo
+                const hashedPassword = await bcrypt.hash('demo', 10);
+                db.addUser({
+                    username: 'demo',
+                    password: hashedPassword,
+                    nome: 'Demo User'
+                });
+                console.log('🎭 DEMO MODE: Utente demo creato (username: demo, password: demo)');
+                console.log('⚠️  DEMO MODE: Password e gestione utenti non modificabili');
+            } else {
+                // Modalità normale: crea utente admin/admin
+                const hashedPassword = await bcrypt.hash('admin', 10);
+                db.addUser({
+                    username: 'admin',
+                    password: hashedPassword,
+                    nome: 'Amministratore'
+                });
+                console.log('✅ Utente admin creato (username: admin, password: admin)');
+            }
         }
     } catch (error) {
         console.error('Errore creazione admin:', error);
@@ -519,6 +534,14 @@ app.get('/api/users', requireAuth, (req, res) => {
  */
 app.post('/api/users', requireAuth, async (req, res) => {
     try {
+        // Blocca creazione utenti in DEMO_MODE
+        if (process.env.DEMO_MODE === 'true') {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Demo mode: User creation is disabled' 
+            });
+        }
+        
         const { username, password, nome } = req.body;
         
         if (!username || !password || !nome) {
@@ -586,6 +609,14 @@ app.post('/api/users', requireAuth, async (req, res) => {
  */
 app.put('/api/users/:id', requireAuth, async (req, res) => {
     try {
+        // Blocca modifica utenti in DEMO_MODE
+        if (process.env.DEMO_MODE === 'true') {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Demo mode: User modification is disabled' 
+            });
+        }
+        
         const { username, password, nome } = req.body;
         
         const updateData = {};
@@ -632,6 +663,14 @@ app.put('/api/users/:id', requireAuth, async (req, res) => {
  */
 app.delete('/api/users/:id', requireAuth, (req, res) => {
     try {
+        // Blocca eliminazione utenti in DEMO_MODE
+        if (process.env.DEMO_MODE === 'true') {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Demo mode: User deletion is disabled' 
+            });
+        }
+        
         // Conta gli utenti prima dell'eliminazione
         const userCount = db.countUsers();
         
