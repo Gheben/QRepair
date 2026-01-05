@@ -275,8 +275,8 @@ When a customer scans the QR code, they automatically access `http://localhost:5
 
 **Due Date Indicators:**
 - 🟢 Green: Future due date
+- 🟡 Yellow: Due date is today
 - 🔴 Red: Past due date
-- ⚪ Gray: No due date set
 
 ### 6. User Management
 
