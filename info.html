@@ -68,11 +68,11 @@
         const translations = {
             it: {
                 title: 'Il tuo Fornitore di Fiducia',
-                modelLabel: '🔧 Modello Dispositivo:',
-                serialNumberLabel: '🔢 Numero Seriale (S/N):',
-                dateLabel: '📅 Ultima Manutenzione:',
-                scadenzaLabel: '⏰ Prossima Scadenza:',
-                ctaText: '📅 È tempo di una revisione?',
+                modelLabel: 'Modello Dispositivo:',
+                serialNumberLabel: 'Numero Seriale (S/N):',
+                dateLabel: 'Ultima Manutenzione:',
+                scadenzaLabel: 'Prossima Scadenza:',
+                ctaText: 'È tempo di una revisione?',
                 callBtn: '📞 CHIAMA ORA',
                 whatsappBtn: '💬 SCRIVI SU WHATSAPP',
                 footerText: '✅ Questo QR code è stato creato dal tuo fornitore di fiducia',
@@ -84,11 +84,11 @@
             },
             en: {
                 title: 'Your Trusted Service Provider',
-                modelLabel: '🔧 Device Model:',
-                serialNumberLabel: '🔢 Serial Number (S/N):',
-                dateLabel: '📅 Last Maintenance:',
-                scadenzaLabel: '⏰ Next Maintenance Due:',
-                ctaText: '📅 Time for a service check?',
+                modelLabel: 'Device Model:',
+                serialNumberLabel: 'Serial Number (S/N):',
+                dateLabel: 'Last Maintenance:',
+                scadenzaLabel: 'Next Maintenance Due:',
+                ctaText: 'Time for a service check?',
                 callBtn: '📞 CALL NOW',
                 whatsappBtn: '💬 SEND MESSAGE',
                 footerText: '✅ This QR code was created by your trusted service provider',
@@ -100,11 +100,11 @@
             },
             de: {
                 title: 'Ihr vertrauenswürdiger Dienstleister',
-                modelLabel: '🔧 Gerätemodell:',
-                serialNumberLabel: '🔢 Seriennummer (S/N):',
-                dateLabel: '📅 Letzte Wartung:',
-                scadenzaLabel: '⏰ Nächste Wartung fällig:',
-                ctaText: '📅 Zeit für eine Inspektion?',
+                modelLabel: 'Gerätemodell:',
+                serialNumberLabel: 'Seriennummer (S/N):',
+                dateLabel: 'Letzte Wartung:',
+                scadenzaLabel: 'Nächste Wartung fällig:',
+                ctaText: 'Zeit für eine Inspektion?',
                 callBtn: '📞 JETZT ANRUFEN',
                 whatsappBtn: '💬 NACHRICHT SENDEN',
                 footerText: '✅ Dieser QR-Code wurde von Ihrem vertrauenswürdigen Dienstleister erstellt',
@@ -130,14 +130,14 @@
             }
             
             // Aggiorna i contenuti della pagina con traduzioni
-            document.getElementById('ditta').innerText = nome;
-            document.getElementById('label-modello').innerText = t.modelLabel;
-            document.getElementById('modello').innerText = modello;
-            document.getElementById('label-serialnumber').innerText = t.serialNumberLabel;
-            document.getElementById('serialNumber').innerText = serialNumber || (lang === 'it' ? 'Non disponibile' : lang === 'de' ? 'Nicht verfügbar' : 'Not available');
-            document.getElementById('label-data').innerText = t.dateLabel;
-            document.getElementById('data').innerText = data;
-            document.getElementById('label-scadenza').innerText = t.scadenzaLabel;
+            document.getElementById('ditta').textContent = nome;
+            document.getElementById('label-modello').textContent = t.modelLabel;
+            document.getElementById('modello').textContent = modello;
+            document.getElementById('label-serialnumber').textContent = t.serialNumberLabel;
+            document.getElementById('serialNumber').textContent = serialNumber || (lang === 'it' ? 'Non disponibile' : lang === 'de' ? 'Nicht verfügbar' : 'Not available');
+            document.getElementById('label-data').textContent = t.dateLabel;
+            document.getElementById('data').textContent = data;
+            document.getElementById('label-scadenza').textContent = t.scadenzaLabel;
             
             // Visualizza scadenza con colore in base allo stato e giorni rimanenti
             if (scadenza) {
@@ -171,7 +171,7 @@
                 scadenzaEl.innerHTML = `<div style="background: #f3f4f6; padding: 10px 15px; border-radius: 8px; border: 2px solid #9ca3af; color: #6b7280; font-weight: bold;">${nonDisponibileText}</div>`;
             }
             
-            document.getElementById('cta-text').innerText = t.ctaText;
+            document.getElementById('cta-text').textContent = t.ctaText;
             
             // Pulisci il numero di telefono (rimuovi spazi, trattini, parentesi)
             const cleanTel = tel.replace(/[\s\-\(\)]/g, '');
@@ -214,8 +214,8 @@
             waBtn.innerHTML = t.whatsappBtn;
             
             // Aggiorna footer
-            document.getElementById('footer-text').innerText = t.footerText;
-            document.getElementById('footer-small').innerText = t.footerSmall;
+            document.getElementById('footer-text').textContent = t.footerText;
+            document.getElementById('footer-small').textContent = t.footerSmall;
             
             // Aggiorna il titolo della pagina
             document.title = `${nome} - ${t.dateLabel.replace(':', '')}`;

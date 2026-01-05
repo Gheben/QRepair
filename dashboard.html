@@ -476,11 +476,18 @@
                     const scadenzaDate = new Date(scadenzaParts[2], scadenzaParts[1] - 1, scadenzaParts[0]);
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
+                    scadenzaDate.setHours(0, 0, 0, 0);
                     
-                    if (scadenzaDate >= today) {
-                        statusDot = '<span style="font-size: 18px; color: #10b981;">●</span>'; // Verde
+                    if (scadenzaDate.getTime() === today.getTime()) {
+                        // Scadenza oggi - Giallo
+                        statusDot = '<span style="font-size: 18px; color: #f59e0b;">●</span>';
+                    } else if (scadenzaDate > today) {
+                        // Scadenza futura - Verde
+                        statusDot = '<span style="font-size: 18px; color: #10b981;">●</span>';
                     } else {
-                        statusDot = '<span style="font-size: 18px; color: #ef4444;">●</span>'; // Rosso
+                        // Scadenza passata - Rosso con testo
+                        statusDot = '<span style="font-size: 18px; color: #ef4444;">●</span>';
+                        scadenzaText = '<span style="color: #ef4444; font-weight: 600;">Scaduta</span>';
                     }
                 } else {
                     statusDot = '<span style="font-size: 18px; color: #ccc;">●</span>'; // Grigio se non c'è scadenza

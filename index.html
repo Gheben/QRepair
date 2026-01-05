@@ -168,7 +168,15 @@
         const nomeInput = document.getElementById('nome');
         const autocompleteList = document.getElementById('autocomplete-list');
         
+        // Reset selectedClientId se l'utente modifica il telefono manualmente
+        document.getElementById('tel').addEventListener('input', () => {
+            selectedClientId = null;
+        });
+        
         nomeInput.addEventListener('input', (e) => {
+            // Resetta il cliente selezionato quando l'utente modifica manualmente
+            selectedClientId = null;
+            
             const query = e.target.value.toLowerCase().trim();
             
             if (query.length < 2) {
@@ -206,9 +214,14 @@
         });
         
         // Seleziona cliente dall'autocomplete
+        let selectedClientId = null; // Variabile per salvare il cliente selezionato
+        
         function selectClient(clientId) {
             const client = allClients.find(c => c.id === clientId);
             if (!client) return;
+            
+            // Salva l'ID del cliente selezionato
+            selectedClientId = clientId;
             
             // Precompila i campi
             document.getElementById('nome').value = `${client.nome} ${client.cognome}`;
@@ -305,41 +318,51 @@
             const scadenzaIta = scadenzaObj.toLocaleDateString('it-IT');
             
             // Crea o aggiorna il cliente
-            try {
-                const clientExistsResponse = await fetch(`http://localhost:3000/api/clienti/search?q=${encodeURIComponent(telCliente)}`);
-                const clientExistsData = await clientExistsResponse.json();
-                
-                if (clientExistsData.success && clientExistsData.data.length > 0) {
-                    // Cliente già esiste
-                    console.log('Cliente già esistente:', clientExistsData.data[0]);
-                } else {
-                    // Crea nuovo cliente
-                    const nameParts = nomeCliente.trim().split(' ');
-                    const nome = nameParts[0];
-                    const cognome = nameParts.slice(1).join(' ') || nome;
+            let clientId = selectedClientId; // Usa il cliente selezionato dall'autocomplete se esiste
+            
+            // Se non c'è un cliente selezionato, cerca o crea
+            if (!clientId) {
+                try {
+                    const clientExistsResponse = await fetch(`http://localhost:3000/api/clienti/search?q=${encodeURIComponent(telCliente)}`);
+                    const clientExistsData = await clientExistsResponse.json();
                     
-                    const clientData = {
-                        nome: nome,
-                        cognome: cognome,
-                        tel: telCliente,
-                        lingua: lingua,
-                        email: null,
-                        piva: null
-                    };
-                    
-                    const createClientResponse = await fetch('http://localhost:3000/api/clienti', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(clientData)
-                    });
-                    
-                    if (createClientResponse.ok) {
-                        console.log('Cliente creato automaticamente');
+                    if (clientExistsData.success && clientExistsData.data.length > 0) {
+                        // Cliente già esiste
+                        clientId = clientExistsData.data[0].id;
+                        console.log('Cliente già esistente:', clientExistsData.data[0]);
+                    } else {
+                        // Crea nuovo cliente
+                        const nameParts = nomeCliente.trim().split(' ');
+                        const nome = nameParts[0];
+                        const cognome = nameParts.slice(1).join(' ') || nome;
+                        
+                        const clientData = {
+                            nome: nome,
+                            cognome: cognome,
+                            tel: telCliente,
+                            lingua: lingua,
+                            email: null,
+                            piva: null
+                        };
+                        
+                        const createClientResponse = await fetch('http://localhost:3000/api/clienti', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(clientData)
+                        });
+                        
+                        if (createClientResponse.ok) {
+                            const newClient = await createClientResponse.json();
+                            clientId = newClient.data.id;
+                            console.log('Cliente creato automaticamente con ID:', clientId);
+                        }
                     }
+                } catch (error) {
+                    console.error('Errore creazione cliente:', error);
+                    // Continua comunque con la creazione del QR
                 }
-            } catch (error) {
-                console.error('Errore creazione cliente:', error);
-                // Continua comunque con la creazione del QR
+            } else {
+                console.log('Usando cliente selezionato dall\'autocomplete con ID:', clientId);
             }
             
             // Salva tramite API prima di generare l'URL (per ottenere l'ID)
@@ -353,7 +376,8 @@
                     data: dataIta,
                     scadenza: scadenzaIta,
                     url: '', // Sarà aggiornato dopo
-                    lingua: lingua
+                    lingua: lingua,
+                    client_id: clientId
                 };
                 console.log('Salvando record:', recordData);
                 const response = await api.add(recordData);
@@ -380,7 +404,8 @@
                     data: dataIta,
                     scadenza: scadenzaIta,
                     url: url,
-                    lingua: lingua
+                    lingua: lingua,
+                    client_id: clientId
                 };
                 console.log('Aggiornando record con URL:', updateData);
                 await fetch(`/api/manutenzioni/${recordId}`, {
@@ -412,6 +437,7 @@
 
         function resetForm() {
             form.reset();
+            selectedClientId = null; // Reset del cliente selezionato
             document.getElementById('data').valueAsDate = new Date();
             form.style.display = 'block';
             resultDiv.style.display = 'none';

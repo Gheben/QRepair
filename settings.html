@@ -26,7 +26,7 @@
                 <div class="form-group">
                     <label for="logo">Logo Aziendale (opzionale)</label>
                     <input type="file" id="logo" name="logo" accept="image/*" style="padding: 10px;">
-                    <small style="color: #666;">Il logo verrà mostrato nella pagina del QR code</small>
+                    <small style="color: #666;">Il logo verrà mostrato nella pagina del QR code. Dimensione massima: 5MB</small>
                     <div id="logo-preview" style="margin-top: 10px; display: none;">
                         <img id="logo-img" src="" alt="Logo" style="max-width: 80px; max-height: 80px; border-radius: 10px; border: 2px solid #e0e0e0;">
                         <button type="button" onclick="removeLogo()" style="margin-left: 10px; padding: 5px 10px; background: #f5576c; color: white; border: none; border-radius: 5px; cursor: pointer;">🗑️ Rimuovi</button>
@@ -102,7 +102,7 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        currentLogo = canvas.toDataURL('image/jpeg', 0.8);
+                        currentLogo = canvas.toDataURL('image/png');
                         document.getElementById('logo-img').src = currentLogo;
                         document.getElementById('logo-preview').style.display = 'block';
                     };

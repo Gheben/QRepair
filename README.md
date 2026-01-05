@@ -80,6 +80,34 @@ Al primo avvio, il sistema crea automaticamente un utente amministratore:
 
 ## 📖 Guida all'Utilizzo
 
+### 📸 Panoramica Interfacce
+
+#### Dashboard Principale
+![Dashboard Principale](screenshot/Dashboard%20Principale.png)
+*Vista principale con statistiche, ricerca e gestione manutenzioni*
+
+#### Generazione QR Code
+![Generazione QR](screenshot/Generazione%20QR.png)
+*Form per la creazione di nuovi QR code per i dispositivi*
+
+#### Dashboard Clienti
+![Dashboard Clienti](screenshot/Dashboard%20Clienti.png)
+*Gestione completa dei clienti con rubrica e storico manutenzioni*
+
+#### Visualizzazione QR Cliente
+![QR Cliente](screenshot/QR%20Cliente.png)
+*Pagina pubblica visualizzata dai clienti scansionando il QR code*
+
+#### Gestione Utenti
+![Gestione Utenti](screenshot/Gestione%20Utenti.png)
+*Amministrazione utenti del sistema*
+
+#### Impostazioni Fornitore
+![Impostazioni Fornitore](screenshot/Impostazioni%20Fornitore.png)
+*Configurazione dati aziendali, logo e contatti*
+
+---
+
 ### 1. Login
 
 1. Apri `http://localhost:3000/login`

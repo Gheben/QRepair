@@ -75,7 +75,7 @@ function migrateOldUrls() {
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '5mb' })); // Limite per supportare immagini base64
 
 // Configura sessioni
 app.use(session({
@@ -239,7 +239,7 @@ app.get('/api/manutenzioni/:id', (req, res) => {
  */
 app.post('/api/manutenzioni', requireAuth, (req, res) => {
     try {
-        const { nome, tel, modello, serialNumber, data, url, lingua, scadenza } = req.body;
+        const { nome, tel, modello, serialNumber, data, url, lingua, scadenza, client_id } = req.body;
         
         if (!nome || !tel || !data) {
             return res.status(400).json({ 
@@ -257,7 +257,8 @@ app.post('/api/manutenzioni', requireAuth, (req, res) => {
             dataCreazione: new Date().toISOString(),
             url: url || '',
             lingua: lingua || 'it',
-            scadenza: scadenza || null
+            scadenza: scadenza || null,
+            client_id: client_id || null
         });
         
         res.status(201).json({ success: true, data: newRecord });
@@ -273,7 +274,7 @@ app.post('/api/manutenzioni', requireAuth, (req, res) => {
  */
 app.put('/api/manutenzioni/:id', requireAuth, (req, res) => {
     try {
-        const { nome, tel, modello, serialNumber, data, url, lingua, scadenza } = req.body;
+        const { nome, tel, modello, serialNumber, data, url, lingua, scadenza, client_id } = req.body;
         
         const success = db.update(req.params.id, {
             nome,
@@ -283,7 +284,8 @@ app.put('/api/manutenzioni/:id', requireAuth, (req, res) => {
             data,
             url,
             lingua: lingua || 'it',
-            scadenza: scadenza || null
+            scadenza: scadenza || null,
+            client_id: client_id || null
         });
         
         if (success) {

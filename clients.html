@@ -360,14 +360,14 @@
             }
         }
         
-        // Conta manutenzioni per cliente (per telefono)
-        function countMaintenances(tel) {
-            return allMaintenances.filter(m => m.tel === tel).length;
+        // Conta manutenzioni per cliente (per client_id)
+        function countMaintenances(clientId) {
+            return allMaintenances.filter(m => m.client_id === clientId).length;
         }
         
         // Ultima manutenzione per cliente
-        function getLastMaintenance(tel) {
-            const clientMaintenances = allMaintenances.filter(m => m.tel === tel);
+        function getLastMaintenance(clientId) {
+            const clientMaintenances = allMaintenances.filter(m => m.client_id === clientId);
             if (clientMaintenances.length === 0) return null;
             
             return clientMaintenances.sort((a, b) => 
@@ -405,8 +405,8 @@
             
             filteredClients.forEach(client => {
                 const fullName = `${client.nome} ${client.cognome}`;
-                const maintenanceCount = countMaintenances(client.tel);
-                const lastMaintenance = getLastMaintenance(client.tel);
+                const maintenanceCount = countMaintenances(client.id);
+                const lastMaintenance = getLastMaintenance(client.id);
                 const lastDate = lastMaintenance ? new Date(lastMaintenance.data).toLocaleDateString('it-IT') : '-';
                 const flagClass = langFlags[client.lingua] || 'it';
                 const flag = `<span class="fi fi-${flagClass}" style="font-size: 20px;"></span>`;
@@ -422,7 +422,7 @@
                         <td>${lastDate}</td>
                         <td>
                             <div class="action-buttons">
-                                ${maintenanceCount > 0 ? `<button onclick="viewMaintenances('${client.tel}')" class="btn-action btn-view">👁️ Manutenzioni</button>` : ''}
+                                ${maintenanceCount > 0 ? `<button onclick="viewMaintenances(${client.id})" class="btn-action btn-view">👁️ Manutenzioni</button>` : ''}
                                 <button onclick="editClient(${client.id})" class="btn-action btn-edit">✏️</button>
                                 <button onclick="deleteClient(${client.id}, '${fullName}')" class="btn-action btn-delete">🗑️</button>
                             </div>
@@ -536,14 +536,14 @@
         });
         
         // Visualizza manutenzioni cliente
-        function viewMaintenances(tel) {
-            const client = allClients.find(c => c.tel === tel);
+        function viewMaintenances(clientId) {
+            const client = allClients.find(c => c.id === clientId);
             if (!client) return;
             
             document.getElementById('maintenances-title').textContent = 
                 `🔧 Manutenzioni di ${client.nome} ${client.cognome}`;
             
-            const clientMaintenances = allMaintenances.filter(m => m.tel === tel);
+            const clientMaintenances = allMaintenances.filter(m => m.client_id === clientId);
             const sorted = clientMaintenances.sort((a, b) => 
                 new Date(b.data) - new Date(a.data)
             );
@@ -581,6 +581,7 @@
                             <div class="action-buttons">
                                 <button onclick="showMaintenanceUpdateModal(${m.id})" class="btn-action btn-edit">🔄 Manutenzione Eseguita</button>
                                 <a href="/info?id=${m.id}" target="_blank" class="btn-action btn-view">👁️ Vedi</a>
+                                <button onclick="deleteMaintenance(${m.id}, '${m.modello || 'Manutenzione'}')" class="btn-action btn-delete">🗑️</button>
                             </div>
                         </td>
                     </tr>
@@ -666,6 +667,30 @@
             } catch (error) {
                 console.error('Errore:', error);
                 alert('❌ Errore durante l\'aggiornamento');
+            }
+        }
+        
+        // Elimina manutenzione
+        async function deleteMaintenance(id, modello) {
+            if (!confirm(`Sei sicuro di voler eliminare la manutenzione "${modello}"?\n\nQuesta azione non può essere annullata.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/manutenzioni/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('✅ Manutenzione eliminata!');
+                    closeMaintenancesModal();
+                    await loadData();
+                } else {
+                    alert('❌ Errore durante l\'eliminazione');
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('❌ Errore durante l\'eliminazione');
             }
         }
         

@@ -98,6 +98,30 @@ class QRDatabase {
                 this.save();
                 console.log('✅ Tabella "clienti" creata con successo');
             }
+            
+            // Aggiungi colonna client_id alla tabella manutenzioni
+            if (!columns.includes('client_id')) {
+                console.log('🔄 Aggiunta colonna "client_id" al database...');
+                this.db.run("ALTER TABLE manutenzioni ADD COLUMN client_id INTEGER");
+                
+                // Popola i client_id esistenti basandosi sul campo tel
+                console.log('🔄 Popolamento client_id per manutenzioni esistenti...');
+                const manutenzioni = this.db.exec("SELECT id, tel FROM manutenzioni WHERE tel IS NOT NULL AND tel != ''");
+                if (manutenzioni && manutenzioni[0]) {
+                    for (const row of manutenzioni[0].values) {
+                        const [manId, tel] = row;
+                        const clientResult = this.db.exec("SELECT id FROM clienti WHERE tel = ?", [tel]);
+                        if (clientResult && clientResult[0] && clientResult[0].values.length > 0) {
+                            const clientId = clientResult[0].values[0][0];
+                            this.db.run("UPDATE manutenzioni SET client_id = ? WHERE id = ?", [clientId, manId]);
+                        }
+                    }
+                }
+                
+                this.db.run('CREATE INDEX IF NOT EXISTS idx_client_id ON manutenzioni(client_id)');
+                this.save();
+                console.log('✅ Colonna "client_id" aggiunta e popolata con successo');
+            }
         } catch (error) {
             console.error('Errore durante la migrazione:', error);
         }
@@ -118,7 +142,8 @@ class QRDatabase {
                 dataCreazione TEXT NOT NULL,
                 url TEXT NOT NULL,
                 lingua TEXT DEFAULT 'it',
-                scadenza TEXT
+                scadenza TEXT,
+                client_id INTEGER
             )
         `);
         
@@ -148,6 +173,7 @@ class QRDatabase {
         this.db.run('CREATE INDEX IF NOT EXISTS idx_nome ON manutenzioni(nome)');
         this.db.run('CREATE INDEX IF NOT EXISTS idx_tel ON manutenzioni(tel)');
         this.db.run('CREATE INDEX IF NOT EXISTS idx_data ON manutenzioni(dataCreazione)');
+        this.db.run('CREATE INDEX IF NOT EXISTS idx_client_id ON manutenzioni(client_id)');
         this.db.run('CREATE INDEX IF NOT EXISTS idx_username ON users(username)');
         this.db.run('CREATE INDEX IF NOT EXISTS idx_cliente_tel ON clienti(tel)');
         this.db.run('CREATE INDEX IF NOT EXISTS idx_cliente_nome ON clienti(nome, cognome)');
@@ -167,8 +193,8 @@ class QRDatabase {
      */
     add(data) {
         const stmt = this.db.prepare(`
-            INSERT INTO manutenzioni (nome, tel, modello, serialNumber, data, dataCreazione, url, lingua, scadenza)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO manutenzioni (nome, tel, modello, serialNumber, data, dataCreazione, url, lingua, scadenza, client_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
         
         stmt.run([
@@ -180,7 +206,8 @@ class QRDatabase {
             data.dataCreazione || new Date().toISOString(),
             data.url,
             data.lingua || 'it',
-            data.scadenza || null
+            data.scadenza || null,
+            data.client_id || null
         ]);
         
         stmt.free();
@@ -235,7 +262,7 @@ class QRDatabase {
     update(id, data) {
         const stmt = this.db.prepare(`
             UPDATE manutenzioni 
-            SET nome = ?, tel = ?, modello = ?, serialNumber = ?, data = ?, url = ?, lingua = ?, scadenza = ?
+            SET nome = ?, tel = ?, modello = ?, serialNumber = ?, data = ?, url = ?, lingua = ?, scadenza = ?, client_id = ?
             WHERE id = ?
         `);
         
@@ -248,6 +275,7 @@ class QRDatabase {
             data.url,
             data.lingua || 'it',
             data.scadenza || null,
+            data.client_id || null,
             id
         ]);
         
