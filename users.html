@@ -348,15 +348,15 @@
             // Validazione password se presente
             if (password) {
                 if (password.length < 6) {
-                    alert('❌ La password deve essere di almeno 6 caratteri');
+                    alert('❌ Password must be at least 6 characters long');
                     return;
                 }
                 if (!/[A-Z]/.test(password)) {
-                    alert('❌ La password deve contenere almeno una lettera maiuscola');
+                    alert('❌ Password must contain at least one uppercase letter');
                     return;
                 }
                 if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
-                    alert('❌ La password deve contenere almeno un carattere speciale (!@#$%^&*()_+-=[]{}|;:,.<>?)');
+                    alert('❌ Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)');
                     return;
                 }
             } else if (!id) {
@@ -383,13 +383,13 @@
                 if (result.success) {
                     closeUserModal();
                     loadUsers();
-                    alert(id ? '✅ Utente aggiornato' : '✅ Utente creato');
+                    alert(id ? '✅ User updated successfully' : '✅ User created successfully');
                 } else {
                     alert('❌ ' + (result.error || 'Error during save'));
                 }
             } catch (error) {
                 console.error('Errore:', error);
-                alert('❌ Errore di connessione');
+                alert('❌ Connection error');
             }
         });
         
