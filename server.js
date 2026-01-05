@@ -514,6 +514,26 @@ app.post('/api/users', requireAuth, async (req, res) => {
             });
         }
         
+        // Validazione password
+        if (password.length < 6) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'La password deve essere di almeno 6 caratteri' 
+            });
+        }
+        if (!/[A-Z]/.test(password)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'La password deve contenere almeno una lettera maiuscola' 
+            });
+        }
+        if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'La password deve contenere almeno un carattere speciale' 
+            });
+        }
+        
         // Verifica se l'username esiste già
         const existing = db.getUserByUsername(username);
         if (existing) {
@@ -558,6 +578,25 @@ app.put('/api/users/:id', requireAuth, async (req, res) => {
         if (username) updateData.username = username;
         if (nome) updateData.nome = nome;
         if (password) {
+            // Validazione password
+            if (password.length < 6) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'La password deve essere di almeno 6 caratteri' 
+                });
+            }
+            if (!/[A-Z]/.test(password)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'La password deve contenere almeno una lettera maiuscola' 
+                });
+            }
+            if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'La password deve contenere almeno un carattere speciale' 
+                });
+            }
             updateData.password = await bcrypt.hash(password, 10);
         }
         

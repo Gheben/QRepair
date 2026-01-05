@@ -182,7 +182,13 @@
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">Password:</label>
                     <input type="password" id="user-password" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                    <small style="color: #666; font-size: 12px;">Lascia vuoto per non modificare la password</small>
+                    <small id="password-hint" style="display: block; margin-top: 8px; padding: 8px; background: #f0f9ff; border-left: 3px solid #3b82f6; border-radius: 4px; font-size: 11px; color: #1e40af;">
+                        <strong>Requisiti password:</strong><br>
+                        ✓ Minimo 6 caratteri<br>
+                        ✓ Almeno una lettera maiuscola (A-Z)<br>
+                        ✓ Almeno un carattere speciale (!@#$%^&*()_+-=[]{}|;:,.<>?)
+                    </small>
+                    <small id="password-edit-hint" style="display: none; color: #666; font-size: 12px; margin-top: 5px;">Lascia vuoto per non modificare la password</small>
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <button type="submit" class="btn btn-primary" style="flex: 1;">✅ Salva</button>
@@ -279,6 +285,8 @@
             document.getElementById('userForm').reset();
             document.getElementById('user-id').value = '';
             document.getElementById('user-password').required = true;
+            document.getElementById('password-hint').style.display = 'block';
+            document.getElementById('password-edit-hint').style.display = 'none';
             document.getElementById('user-modal').classList.add('active');
         }
         
@@ -292,6 +300,8 @@
             document.getElementById('user-username').value = user.username;
             document.getElementById('user-password').value = '';
             document.getElementById('user-password').required = false;
+            document.getElementById('password-hint').style.display = 'none';
+            document.getElementById('password-edit-hint').style.display = 'block';
             document.getElementById('user-modal').classList.add('active');
         }
         
@@ -306,6 +316,26 @@
             const nome = document.getElementById('user-nome').value;
             const username = document.getElementById('user-username').value;
             const password = document.getElementById('user-password').value;
+            
+            // Validazione password se presente
+            if (password) {
+                if (password.length < 6) {
+                    alert('❌ La password deve essere di almeno 6 caratteri');
+                    return;
+                }
+                if (!/[A-Z]/.test(password)) {
+                    alert('❌ La password deve contenere almeno una lettera maiuscola');
+                    return;
+                }
+                if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
+                    alert('❌ La password deve contenere almeno un carattere speciale (!@#$%^&*()_+-=[]{}|;:,.<>?)');
+                    return;
+                }
+            } else if (!id) {
+                // Password obbligatoria per nuovo utente
+                alert('❌ La password è obbligatoria per i nuovi utenti');
+                return;
+            }
             
             const data = { nome, username };
             if (password) data.password = password;
