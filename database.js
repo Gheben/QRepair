@@ -553,7 +553,8 @@ class QRDatabase {
      * Ottieni utente per username
      */
     getUserByUsername(username) {
-        const stmt = this.db.prepare('SELECT * FROM users WHERE username = ?');
+        // Username case-insensitive: usa LOWER() nella query
+        const stmt = this.db.prepare('SELECT * FROM users WHERE LOWER(username) = LOWER(?)');
         stmt.bind([username]);
         let user = null;
         if (stmt.step()) {

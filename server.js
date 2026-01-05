@@ -150,7 +150,8 @@ app.post('/api/auth/login', async (req, res) => {
     }
     
     try {
-        const user = db.getUserByUsername(username);
+        // Username case-insensitive: converte in lowercase
+        const user = db.getUserByUsername(username.toLowerCase());
         
         if (!user) {
             return res.json({ success: false, error: 'Credenziali non valide' });
