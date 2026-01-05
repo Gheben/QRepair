@@ -81,43 +81,32 @@ docker-compose down
 docker-compose up -d --build
 ```
 
----
+**Enable Demo Mode:**
 
-### 🎭 Demo Mode
+To run QRepair in demo mode, simply add the `DEMO_MODE` environment variable to your docker-compose.yml:
 
-QRepair includes a demo mode for testing and demonstrations. In demo mode:
+```yaml
+services:
+  qrepair:
+    build: .
+    ports:
+      - "5126:5126"
+    volumes:
+      - ./data:/app/data
+      - ./manutenzioni.db:/app/manutenzioni.db
+      - ./settings.json:/app/settings.json
+      - ./uploads:/app/uploads
+    environment:
+      - NODE_ENV=production
+      - PORT=5126
+      - DEMO_MODE=true  # Enables demo mode
+    restart: unless-stopped
+```
+
+In demo mode:
 - Default user: `demo` / `demo` (credentials cannot be changed)
 - User management is disabled (cannot create, edit, or delete users)
 - All other features work normally
-
-**Deploy Demo Instance:**
-
-```bash
-# Clone the repository
-git clone https://github.com/Gheben/QRepair.git
-cd QRepair
-
-# Create required directories and files for demo
-mkdir -p data-demo uploads-demo
-touch manutenzioni-demo.db settings-demo.json
-
-# Start demo instance (uses port 5127)
-docker-compose -f docker-compose.demo.yml up -d
-
-# View logs
-docker logs qrepair-demo
-```
-
-Access the demo at `http://localhost:5127` with credentials: `demo` / `demo`
-
-**Production Demo Deployment:**
-
-For a public demo instance (e.g., demo.qrepair.ballarini.app):
-
-1. Deploy using demo compose file
-2. Configure reverse proxy to point to port 5127
-3. Set `DEMO_MODE=true` environment variable
-4. Users can test all features except user management
 
 ---
 
