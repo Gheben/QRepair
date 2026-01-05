@@ -76,6 +76,28 @@ class QRDatabase {
                 this.save();
                 console.log('✅ Tabella "users" creata con successo');
             }
+            
+            // Controlla se la tabella clienti esiste
+            const clientiTables = this.db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='clienti'");
+            if (!clientiTables || clientiTables.length === 0) {
+                console.log('🔄 Creazione tabella "clienti"...');
+                this.db.run(`
+                    CREATE TABLE clienti (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nome TEXT NOT NULL,
+                        cognome TEXT NOT NULL,
+                        email TEXT,
+                        tel TEXT NOT NULL,
+                        lingua TEXT NOT NULL,
+                        piva TEXT,
+                        createdAt TEXT NOT NULL
+                    )
+                `);
+                this.db.run('CREATE INDEX IF NOT EXISTS idx_cliente_tel ON clienti(tel)');
+                this.db.run('CREATE INDEX IF NOT EXISTS idx_cliente_nome ON clienti(nome, cognome)');
+                this.save();
+                console.log('✅ Tabella "clienti" creata con successo');
+            }
         } catch (error) {
             console.error('Errore durante la migrazione:', error);
         }
@@ -110,10 +132,25 @@ class QRDatabase {
             )
         `);
         
+        this.db.run(`
+            CREATE TABLE IF NOT EXISTS clienti (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                cognome TEXT NOT NULL,
+                email TEXT,
+                tel TEXT NOT NULL,
+                lingua TEXT NOT NULL,
+                piva TEXT,
+                createdAt TEXT NOT NULL
+            )
+        `);
+        
         this.db.run('CREATE INDEX IF NOT EXISTS idx_nome ON manutenzioni(nome)');
         this.db.run('CREATE INDEX IF NOT EXISTS idx_tel ON manutenzioni(tel)');
         this.db.run('CREATE INDEX IF NOT EXISTS idx_data ON manutenzioni(dataCreazione)');
         this.db.run('CREATE INDEX IF NOT EXISTS idx_username ON users(username)');
+        this.db.run('CREATE INDEX IF NOT EXISTS idx_cliente_tel ON clienti(tel)');
+        this.db.run('CREATE INDEX IF NOT EXISTS idx_cliente_nome ON clienti(nome, cognome)');
     }
 
     /**
@@ -461,6 +498,139 @@ class QRDatabase {
         const result = this.db.exec('SELECT COUNT(*) as count FROM users');
         return result[0].values[0][0];
     }
-}
+    // ===== METODI PER GESTIONE CLIENTI =====
+
+    /**
+     * Ottieni tutti i clienti
+     */
+    getAllClients() {
+        const stmt = this.db.prepare('SELECT * FROM clienti ORDER BY cognome, nome');
+        const clients = [];
+        while (stmt.step()) {
+            clients.push(stmt.getAsObject());
+        }
+        stmt.free();
+        return clients;
+    }
+
+    /**
+     * Ottieni cliente per ID
+     */
+    getClientById(id) {
+        const stmt = this.db.prepare('SELECT * FROM clienti WHERE id = ?');
+        stmt.bind([id]);
+        let client = null;
+        if (stmt.step()) {
+            client = stmt.getAsObject();
+        }
+        stmt.free();
+        return client;
+    }
+
+    /**
+     * Ottieni cliente per telefono
+     */
+    getClientByTel(tel) {
+        const stmt = this.db.prepare('SELECT * FROM clienti WHERE tel = ?');
+        stmt.bind([tel]);
+        let client = null;
+        if (stmt.step()) {
+            client = stmt.getAsObject();
+        }
+        stmt.free();
+        return client;
+    }
+
+    /**
+     * Cerca clienti per nome/cognome
+     */
+    searchClients(query) {
+        const stmt = this.db.prepare(`
+            SELECT * FROM clienti 
+            WHERE nome LIKE ? OR cognome LIKE ? OR tel LIKE ?
+            ORDER BY cognome, nome
+        `);
+        const searchTerm = `%${query}%`;
+        stmt.bind([searchTerm, searchTerm, searchTerm]);
+        const clients = [];
+        while (stmt.step()) {
+            clients.push(stmt.getAsObject());
+        }
+        stmt.free();
+        return clients;
+    }
+
+    /**
+     * Aggiungi un nuovo cliente
+     */
+    addClient(data) {
+        const stmt = this.db.prepare(`
+            INSERT INTO clienti (nome, cognome, email, tel, lingua, piva, createdAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `);
+        
+        stmt.run([
+            data.nome,
+            data.cognome,
+            data.email || null,
+            data.tel,
+            data.lingua,
+            data.piva || null,
+            data.createdAt || new Date().toISOString()
+        ]);
+        
+        stmt.free();
+        
+        // Ottieni l'ID dell'ultimo inserimento
+        const result = this.db.exec('SELECT last_insert_rowid() as id');
+        const id = result[0].values[0][0];
+        
+        this.save();
+        return { id, ...data };
+    }
+
+    /**
+     * Aggiorna un cliente
+     */
+    updateClient(id, data) {
+        const stmt = this.db.prepare(`
+            UPDATE clienti 
+            SET nome = ?, cognome = ?, email = ?, tel = ?, lingua = ?, piva = ?
+            WHERE id = ?
+        `);
+        
+        stmt.run([
+            data.nome,
+            data.cognome,
+            data.email || null,
+            data.tel,
+            data.lingua,
+            data.piva || null,
+            id
+        ]);
+        
+        stmt.free();
+        this.save();
+        return true;
+    }
+
+    /**
+     * Elimina un cliente
+     */
+    deleteClient(id) {
+        const stmt = this.db.prepare('DELETE FROM clienti WHERE id = ?');
+        stmt.run([id]);
+        stmt.free();
+        this.save();
+        return true;
+    }
+
+    /**
+     * Conta i clienti
+     */
+    countClients() {
+        const result = this.db.exec('SELECT COUNT(*) as count FROM clienti');
+        return result[0]?.values[0][0] || 0;
+    }}
 
 module.exports = QRDatabase;

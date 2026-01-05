@@ -248,14 +248,14 @@
 <body>
     <div class="container" style="max-width: 1200px;">
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h1>📊 Dashboard Manutenzioni</h1>
-                <div style="display: flex; gap: 10px;">
-                    <a href="clients" class="btn-small" style="background: #f59e0b; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600;">👥 Gestione Clienti</a>
-                    <a href="users" class="btn-small" style="background: #10b981; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600;">👤 Gestione Utenti</a>
-                    <a href="settings" class="btn-small" style="background: #6c757d; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600;">⚙️ Impostazioni</a>
-                    <a href="index" class="btn-small btn-export">← Torna al Generatore</a>
-                    <button onclick="logout()" class="btn-small" style="background: #ef4444; color: white;">🚪 Logout</button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <a href="clients" class="btn-small" style="background: #f59e0b; color: white; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap;">👥 Clienti</a>
+                    <a href="users" class="btn-small" style="background: #10b981; color: white; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap;">👤 Utenti</a>
+                    <a href="index" class="btn-small btn-export" style="text-decoration: none; padding: 8px 12px; font-size: 13px; white-space: nowrap;">🎯 Generatore QR</a>
+                    <a href="settings" class="btn-small" style="background: #6c757d; color: white; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; white-space: nowrap;">⚙️ Impostazioni</a>
+                    <button onclick="logout()" class="btn-small" style="background: #ef4444; color: white; padding: 8px 12px; font-size: 13px; white-space: nowrap;">🚪 Logout</button>
                 </div>
             </div>
             
@@ -296,8 +296,13 @@
             </div>
             
             <footer>
-                <p>Powered by <strong>Guido Ballarini</strong></p>
-                <p>&copy; 2026 - Tutti i diritti riservati</p>
+                <p style="margin-bottom: 5px;">Powered by <strong>Guido Ballarini</strong></p>
+                <p style="margin-bottom: 5px;">
+                    <a href="https://github.com/Gheben/QRepair" target="_blank" style="margin: 0 8px; text-decoration: none;" title="GitHub Repository">⚫ GitHub</a>
+                    <a href="https://buymeacoffee.com/guidoballau" target="_blank" style="margin: 0 8px; text-decoration: none; color: #FFDD00;" title="Buy Me a Coffee">☕ Donazione</a>
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN" target="_blank" style="margin: 0 8px; text-decoration: none; color: #0070BA;" title="PayPal">💳 PayPal</a>
+                </p>
+                <p style="margin-bottom: 0;">&copy; 2026 - Tutti i diritti riservati</p>
             </footer>
         </div>
     </div>

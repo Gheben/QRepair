@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestione Clienti - QR Code Manutenzioni</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        .export-buttons {
+        .header-buttons {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         
         .btn-small {
@@ -23,8 +25,13 @@
             transition: all 0.3s;
         }
         
-        .btn-export {
+        .btn-back {
             background: #4facfe;
+            color: white;
+        }
+        
+        .btn-create {
+            background: #10b981;
             color: white;
         }
         
@@ -61,6 +68,7 @@
         .action-buttons {
             display: flex;
             gap: 8px;
+            align-items: center;
         }
         
         .btn-action {
@@ -91,23 +99,6 @@
         .btn-action:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .maintenance-list {
-            margin-top: 10px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            font-size: 13px;
-        }
-        
-        .maintenance-item {
-            padding: 5px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .maintenance-item:last-child {
-            border-bottom: none;
         }
         
         .search-box {
@@ -148,7 +139,7 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             position: relative;
             animation: slideIn 0.3s ease;
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
         }
         
@@ -177,6 +168,32 @@
         .close:hover {
             color: #333;
         }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group small {
+            color: #666;
+            font-size: 12px;
+            display: block;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -184,40 +201,82 @@
         <div class="card">
             <h1>👥 Gestione Clienti</h1>
             
-            <div class="export-buttons">
-                <a href="dashboard" class="btn-small btn-export">← Torna alla Dashboard</a>
+            <div class="header-buttons">
+                <a href="dashboard" class="btn-small btn-back">← Torna alla Dashboard</a>
+                <button onclick="showCreateClientModal()" class="btn-small btn-create">➕ Crea Nuovo Cliente</button>
             </div>
             
             <div class="search-box">
-                <input type="text" id="search" placeholder="🔍 Cerca per nome o telefono...">
+                <input type="text" id="search" placeholder="🔍 Cerca per nome, cognome o telefono...">
             </div>
             
             <div id="clients-container"></div>
             
             <footer>
-                <p>Powered by <strong>Guido Ballarini</strong></p>
-                <p>&copy; 2026 - Tutti i diritti riservati</p>
+                <p style="margin-bottom: 5px;">Powered by <strong>Guido Ballarini</strong></p>
+                <p style="margin-bottom: 5px;">
+                    <a href="https://github.com/Gheben/QRepair" target="_blank" style="margin: 0 8px; text-decoration: none;" title="GitHub Repository">⚫ GitHub</a>
+                    <a href="https://buymeacoffee.com/guidoballau" target="_blank" style="margin: 0 8px; text-decoration: none; color: #FFDD00;" title="Buy Me a Coffee">☕ Donazione</a>
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN" target="_blank" style="margin: 0 8px; text-decoration: none; color: #0070BA;" title="PayPal">💳 PayPal</a>
+                </p>
+                <p style="margin-bottom: 0;">&copy; 2026 - Tutti i diritti riservati</p>
             </footer>
         </div>
     </div>
     
-    <!-- Modal Modifica Cliente -->
+    <!-- Modal Crea/Modifica Cliente -->
     <div id="client-modal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content" style="max-width: 700px;">
             <span class="close" onclick="closeClientModal()">&times;</span>
-            <h2 id="modal-title">✏️ Modifica Cliente</h2>
+            <h2 id="modal-title">➕ Nuovo Cliente</h2>
             <form id="clientForm">
-                <input type="hidden" id="client-old-nome">
-                <input type="hidden" id="client-old-tel">
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Nome Cliente:</label>
-                    <input type="text" id="client-nome" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                <input type="hidden" id="client-id">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Nome: <span style="color: red;">*</span></label>
+                        <input type="text" id="client-nome" required>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Cognome: <span style="color: red;">*</span></label>
+                        <input type="text" id="client-cognome" required>
+                    </div>
                 </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Telefono:</label>
-                    <input type="tel" id="client-tel" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Numero Cellulare: <span style="color: red;">*</span></label>
+                        <input type="tel" id="client-tel" required placeholder="+39 ...">
+                        <small>Formato: +39 3331234567</small>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Lingua: <span style="color: red;">*</span></label>
+                        <select id="client-lingua" required>
+                            <option value="">Seleziona lingua...</option>
+                            <option value="it">🇮🇹 Italiano</option>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                        </select>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 10px;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Email:</label>
+                        <input type="email" id="client-email" placeholder="cliente@esempio.it">
+                        <small>Campo opzionale</small>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>P.IVA:</label>
+                        <input type="text" id="client-piva" placeholder="IT12345678901">
+                        <small>Campo opzionale</small>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button type="submit" class="btn btn-primary" style="flex: 1;">✅ Salva</button>
                     <button type="button" onclick="closeClientModal()" class="btn" style="flex: 1; background: #ccc;">❌ Annulla</button>
                 </div>
@@ -227,85 +286,116 @@
     
     <!-- Modal Manutenzioni Cliente -->
     <div id="maintenances-modal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-content" style="max-width: 900px;">
             <span class="close" onclick="closeMaintenancesModal()">&times;</span>
             <h2 id="maintenances-title">🔧 Manutenzioni Cliente</h2>
             <div id="maintenances-list"></div>
         </div>
     </div>
     
+    <!-- Modal Aggiorna Manutenzione -->
+    <div id="maintenance-update-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="closeMaintenanceModal()">&times;</span>
+            <h2>🔄 Aggiorna Manutenzione</h2>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Cliente:</label>
+                <input type="text" id="update-nome" readonly style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f5f5f5;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Modello:</label>
+                <input type="text" id="update-modello" readonly style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f5f5f5;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">S/N:</label>
+                <input type="text" id="update-serialnumber" readonly style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f5f5f5;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nuova Data Manutenzione:</label>
+                <input type="date" id="update-data" required style="width: 100%; padding: 8px; border: 2px solid #667eea; border-radius: 8px; font-size: 14px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nuova Data Scadenza:</label>
+                <input type="date" id="update-scadenza" required style="width: 100%; padding: 8px; border: 2px solid #667eea; border-radius: 8px; font-size: 14px;">
+                <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">⚠️ La scadenza deve essere successiva alla data di manutenzione</small>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="saveMaintenanceUpdate()" class="btn btn-primary" style="flex: 1;">✅ Salva</button>
+                <button onclick="closeMaintenanceModal()" class="btn" style="flex: 1; background: #ccc;">❌ Annulla</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
-        let allRecords = [];
-        let clients = [];
+        let allClients = [];
+        let allMaintenances = [];
         let filteredClients = [];
+        let currentClientId = null;
+        let currentMaintenanceId = null;
         
-        // Verifica autenticazione
-        fetch('http://localhost:3000/api/auth/check')
-            .then(res => res.json())
-            .then(data => {
-                if (!data.authenticated) {
-                    window.location.href = '/login';
-                } else {
-                    loadClients();
-                }
-            })
-            .catch(() => window.location.href = '/login');
-        
-        async function loadClients() {
+        // Carica clienti e manutenzioni
+        async function loadData() {
             try {
-                const response = await fetch('http://localhost:3000/api/manutenzioni');
-                const data = await response.json();
-                if (data.success) {
-                    allRecords = data.data;
-                    processClients();
-                    renderClients();
+                const [clientsResponse, maintenancesResponse] = await Promise.all([
+                    fetch('http://localhost:3000/api/clienti'),
+                    fetch('http://localhost:3000/api/manutenzioni')
+                ]);
+                
+                const clientsData = await clientsResponse.json();
+                const maintenancesData = await maintenancesResponse.json();
+                
+                if (clientsData.success) {
+                    allClients = clientsData.data;
+                    filteredClients = allClients;
                 }
+                
+                if (maintenancesData.success) {
+                    allMaintenances = maintenancesData.data;
+                }
+                
+                renderClients();
             } catch (error) {
-                console.error('Errore caricamento clienti:', error);
+                console.error('Errore caricamento dati:', error);
+                alert('❌ Errore durante il caricamento dei dati');
             }
         }
         
-        function processClients() {
-            // Raggruppa record per cliente (nome + telefono)
-            const clientMap = new Map();
-            
-            allRecords.forEach(record => {
-                const key = `${record.nome}|${record.tel}`;
-                if (!clientMap.has(key)) {
-                    clientMap.set(key, {
-                        nome: record.nome,
-                        tel: record.tel,
-                        maintenances: []
-                    });
-                }
-                clientMap.get(key).maintenances.push(record);
-            });
-            
-            clients = Array.from(clientMap.values());
-            filteredClients = clients;
+        // Conta manutenzioni per cliente (per telefono)
+        function countMaintenances(tel) {
+            return allMaintenances.filter(m => m.tel === tel).length;
         }
         
+        // Ultima manutenzione per cliente
+        function getLastMaintenance(tel) {
+            const clientMaintenances = allMaintenances.filter(m => m.tel === tel);
+            if (clientMaintenances.length === 0) return null;
+            
+            return clientMaintenances.sort((a, b) => 
+                new Date(b.data) - new Date(a.data)
+            )[0];
+        }
+        
+        // Render tabella clienti
         function renderClients() {
             const container = document.getElementById('clients-container');
             
             if (filteredClients.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #999;">
-                        <div style="font-size: 64px;">👤</div>
-                        <h3>Nessun cliente trovato</h3>
-                        <p>I clienti verranno creati automaticamente quando generi QR code</p>
-                    </div>
-                `;
+                container.innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Nessun cliente trovato</p>';
                 return;
             }
+            
+            const langFlags = { it: 'it', en: 'gb', de: 'de' };
             
             let html = `
                 <table>
                     <thead>
                         <tr>
-                            <th>Nome Cliente</th>
+                            <th>Nome Completo</th>
                             <th>Telefono</th>
-                            <th>N° Manutenzioni</th>
+                            <th>Email</th>
+                            <th>Lingua</th>
+                            <th>P.IVA</th>
+                            <th>Manutenzioni</th>
                             <th>Ultima Manutenzione</th>
                             <th>Azioni</th>
                         </tr>
@@ -314,22 +404,27 @@
             `;
             
             filteredClients.forEach(client => {
-                const sortedMaintenances = client.maintenances.sort((a, b) => 
-                    new Date(b.data) - new Date(a.data)
-                );
-                const lastMaintenance = sortedMaintenances[0];
-                const lastDate = new Date(lastMaintenance.data).toLocaleDateString('it-IT');
+                const fullName = `${client.nome} ${client.cognome}`;
+                const maintenanceCount = countMaintenances(client.tel);
+                const lastMaintenance = getLastMaintenance(client.tel);
+                const lastDate = lastMaintenance ? new Date(lastMaintenance.data).toLocaleDateString('it-IT') : '-';
+                const flagClass = langFlags[client.lingua] || 'it';
+                const flag = `<span class="fi fi-${flagClass}" style="font-size: 20px;"></span>`;
                 
                 html += `
                     <tr>
-                        <td><strong>${client.nome}</strong></td>
+                        <td><strong>${fullName}</strong></td>
                         <td>${client.tel}</td>
-                        <td>${client.maintenances.length}</td>
+                        <td>${client.email || '-'}</td>
+                        <td>${flag}</td>
+                        <td>${client.piva || '-'}</td>
+                        <td style="text-align: center;">${maintenanceCount}</td>
                         <td>${lastDate}</td>
                         <td>
                             <div class="action-buttons">
-                                <button onclick="viewMaintenances('${escapeHtml(client.nome)}', '${escapeHtml(client.tel)}')" class="btn-action btn-view">👁️ Manutenzioni</button>
-                                <button onclick="editClient('${escapeHtml(client.nome)}', '${escapeHtml(client.tel)}')" class="btn-action btn-edit">✏️ Modifica</button>
+                                ${maintenanceCount > 0 ? `<button onclick="viewMaintenances('${client.tel}')" class="btn-action btn-view">👁️ Manutenzioni</button>` : ''}
+                                <button onclick="editClient(${client.id})" class="btn-action btn-edit">✏️</button>
+                                <button onclick="deleteClient(${client.id}, '${fullName}')" class="btn-action btn-delete">🗑️</button>
                             </div>
                         </td>
                     </tr>
@@ -344,25 +439,137 @@
             container.innerHTML = html;
         }
         
-        function escapeHtml(text) {
-            return text.replace(/'/g, "\\'");
+        // Mostra modal crea cliente
+        function showCreateClientModal() {
+            document.getElementById('modal-title').textContent = '➕ Nuovo Cliente';
+            document.getElementById('client-id').value = '';
+            document.getElementById('clientForm').reset();
+            document.getElementById('client-modal').classList.add('active');
         }
         
-        function viewMaintenances(nome, tel) {
-            const client = clients.find(c => c.nome === nome && c.tel === tel);
+        // Modifica cliente
+        async function editClient(id) {
+            const client = allClients.find(c => c.id === id);
             if (!client) return;
             
-            document.getElementById('maintenances-title').textContent = `🔧 Manutenzioni di ${nome}`;
+            document.getElementById('modal-title').textContent = '✏️ Modifica Cliente';
+            document.getElementById('client-id').value = id;
+            document.getElementById('client-nome').value = client.nome;
+            document.getElementById('client-cognome').value = client.cognome;
+            document.getElementById('client-tel').value = client.tel;
+            document.getElementById('client-lingua').value = client.lingua;
+            document.getElementById('client-email').value = client.email || '';
+            document.getElementById('client-piva').value = client.piva || '';
+            document.getElementById('client-modal').classList.add('active');
+        }
+        
+        // Elimina cliente
+        async function deleteClient(id, name) {
+            if (!confirm(`Sei sicuro di voler eliminare il cliente "${name}"?\n\nAttenzione: le manutenzioni associate rimarranno nel sistema.`)) {
+                return;
+            }
             
-            const sortedMaintenances = client.maintenances.sort((a, b) => 
+            try {
+                const response = await fetch(`http://localhost:3000/api/clienti/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Cliente eliminato!');
+                    loadData();
+                } else {
+                    alert('❌ ' + result.error);
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('❌ Errore durante l\'eliminazione');
+            }
+        }
+        
+        // Chiudi modal cliente
+        function closeClientModal() {
+            document.getElementById('client-modal').classList.remove('active');
+        }
+        
+        // Salva cliente (crea o modifica)
+        document.getElementById('clientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('client-id').value;
+            const data = {
+                nome: document.getElementById('client-nome').value.trim(),
+                cognome: document.getElementById('client-cognome').value.trim(),
+                tel: document.getElementById('client-tel').value.trim(),
+                lingua: document.getElementById('client-lingua').value,
+                email: document.getElementById('client-email').value.trim() || null,
+                piva: document.getElementById('client-piva').value.trim() || null
+            };
+            
+            try {
+                const url = id 
+                    ? `http://localhost:3000/api/clienti/${id}` 
+                    : 'http://localhost:3000/api/clienti';
+                
+                const method = id ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(id ? '✅ Cliente aggiornato!' : '✅ Cliente creato!');
+                    closeClientModal();
+                    loadData();
+                } else {
+                    alert('❌ ' + result.error);
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('❌ Errore durante il salvataggio');
+            }
+        });
+        
+        // Visualizza manutenzioni cliente
+        function viewMaintenances(tel) {
+            const client = allClients.find(c => c.tel === tel);
+            if (!client) return;
+            
+            document.getElementById('maintenances-title').textContent = 
+                `🔧 Manutenzioni di ${client.nome} ${client.cognome}`;
+            
+            const clientMaintenances = allMaintenances.filter(m => m.tel === tel);
+            const sorted = clientMaintenances.sort((a, b) => 
                 new Date(b.data) - new Date(a.data)
             );
             
             let html = '<table style="margin-top: 20px;"><thead><tr><th>Data</th><th>Modello</th><th>S/N</th><th>Scadenza</th><th>Azioni</th></tr></thead><tbody>';
             
-            sortedMaintenances.forEach(m => {
+            sorted.forEach(m => {
                 const dataFormat = new Date(m.data).toLocaleDateString('it-IT');
-                const scadenzaFormat = m.scadenza ? new Date(m.scadenza).toLocaleDateString('it-IT') : '-';
+                
+                let scadenzaFormat = '-';
+                if (m.scadenza) {
+                    if (m.scadenza.includes('/')) {
+                        const parts = m.scadenza.split('/');
+                        if (parts.length === 3) {
+                            const scadenzaDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                            if (!isNaN(scadenzaDate.getTime())) {
+                                scadenzaFormat = scadenzaDate.toLocaleDateString('it-IT');
+                            }
+                        }
+                    } else {
+                        const scadenzaDate = new Date(m.scadenza);
+                        if (!isNaN(scadenzaDate.getTime())) {
+                            scadenzaFormat = scadenzaDate.toLocaleDateString('it-IT');
+                        }
+                    }
+                }
                 
                 html += `
                     <tr>
@@ -371,7 +578,10 @@
                         <td>${m.serialNumber || '-'}</td>
                         <td>${scadenzaFormat}</td>
                         <td>
-                            <a href="/info?id=${m.id}" target="_blank" class="btn-action btn-view">👁️ Vedi</a>
+                            <div class="action-buttons">
+                                <button onclick="showMaintenanceUpdateModal(${m.id})" class="btn-action btn-edit">🔄 Manutenzione Eseguita</button>
+                                <a href="/info?id=${m.id}" target="_blank" class="btn-action btn-view">👁️ Vedi</a>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -387,69 +597,98 @@
             document.getElementById('maintenances-modal').classList.remove('active');
         }
         
-        function editClient(nome, tel) {
-            document.getElementById('client-old-nome').value = nome;
-            document.getElementById('client-old-tel').value = tel;
-            document.getElementById('client-nome').value = nome;
-            document.getElementById('client-tel').value = tel;
-            document.getElementById('client-modal').classList.add('active');
-        }
-        
-        function closeClientModal() {
-            document.getElementById('client-modal').classList.remove('active');
-        }
-        
-        document.getElementById('clientForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        function showMaintenanceUpdateModal(id) {
+            currentMaintenanceId = id;
+            const record = allMaintenances.find(r => r.id === id);
             
-            const oldNome = document.getElementById('client-old-nome').value;
-            const oldTel = document.getElementById('client-old-tel').value;
-            const newNome = document.getElementById('client-nome').value;
-            const newTel = document.getElementById('client-tel').value;
+            if (!record) return;
+            
+            document.getElementById('update-nome').value = record.nome || '';
+            document.getElementById('update-modello').value = record.modello || '';
+            document.getElementById('update-serialnumber').value = record.serialNumber || '';
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('update-data').value = today;
+            
+            const oneYearLater = new Date();
+            oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+            document.getElementById('update-scadenza').value = oneYearLater.toISOString().split('T')[0];
+            
+            document.getElementById('maintenance-update-modal').classList.add('active');
+        }
+        
+        function closeMaintenanceModal() {
+            document.getElementById('maintenance-update-modal').classList.remove('active');
+            currentMaintenanceId = null;
+        }
+        
+        async function saveMaintenanceUpdate() {
+            if (!currentMaintenanceId) return;
+            
+            const data = document.getElementById('update-data').value;
+            const scadenza = document.getElementById('update-scadenza').value;
+            
+            if (!data || !scadenza) {
+                alert('⚠️ Compila tutti i campi obbligatori');
+                return;
+            }
+            
+            if (new Date(scadenza) <= new Date(data)) {
+                alert('⚠️ La data di scadenza deve essere successiva alla data di manutenzione');
+                return;
+            }
+            
+            // Converti la scadenza in formato DD/MM/YYYY
+            const scadenzaDate = new Date(scadenza);
+            const scadenzaFormatted = `${String(scadenzaDate.getDate()).padStart(2, '0')}/${String(scadenzaDate.getMonth() + 1).padStart(2, '0')}/${scadenzaDate.getFullYear()}`;
             
             try {
-                // Trova tutti i record del cliente
-                const clientRecords = allRecords.filter(r => r.nome === oldNome && r.tel === oldTel);
+                const record = allMaintenances.find(r => r.id === currentMaintenanceId);
                 
-                // Aggiorna ogni record
-                const updates = clientRecords.map(record => 
-                    fetch(`http://localhost:3000/api/manutenzioni/${record.id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            ...record,
-                            nome: newNome,
-                            tel: newTel
-                        })
+                const response = await fetch(`http://localhost:3000/api/manutenzioni/${currentMaintenanceId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...record,
+                        data,
+                        scadenza: scadenzaFormatted
                     })
-                );
+                });
                 
-                await Promise.all(updates);
-                
-                closeClientModal();
-                loadClients();
-                alert(`✅ Cliente aggiornato! ${clientRecords.length} record modificati.`);
+                if (response.ok) {
+                    closeMaintenanceModal();
+                    closeMaintenancesModal();
+                    loadData();
+                    alert('✅ Manutenzione aggiornata!');
+                } else {
+                    alert('❌ Errore durante l\'aggiornamento');
+                }
             } catch (error) {
                 console.error('Errore:', error);
                 alert('❌ Errore durante l\'aggiornamento');
             }
-        });
+        }
         
         // Ricerca clienti
         document.getElementById('search').addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             
             if (query === '') {
-                filteredClients = clients;
+                filteredClients = allClients;
             } else {
-                filteredClients = clients.filter(c => 
+                filteredClients = allClients.filter(c => 
                     c.nome.toLowerCase().includes(query) || 
-                    c.tel.includes(query)
+                    c.cognome.toLowerCase().includes(query) ||
+                    c.tel.includes(query) ||
+                    (c.email && c.email.toLowerCase().includes(query))
                 );
             }
             
             renderClients();
         });
+        
+        // Carica i dati all'avvio
+        loadData();
     </script>
 </body>
 </html>

@@ -7,6 +7,56 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="api-client.js"></script>
+    <style>
+        .autocomplete-container {
+            position: relative;
+        }
+        
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #667eea;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .autocomplete-list.active {
+            display: block;
+        }
+        
+        .autocomplete-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .autocomplete-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        
+        .autocomplete-client-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .autocomplete-client-tel {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -18,9 +68,10 @@
             <p class="subtitle">Crea il tuo QR code personalizzato per i tuoi clienti</p>
             
             <form id="form-qr">
-                <div class="form-group">
+                <div class="form-group autocomplete-container">
                     <label for="nome">Nome Cliente</label>
-                    <input type="text" id="nome" name="nome" required placeholder="es. Mario Rossi">
+                    <input type="text" id="nome" name="nome" required placeholder="es. Mario Rossi" autocomplete="off">
+                    <div id="autocomplete-list" class="autocomplete-list"></div>
                 </div>
 
                 <div class="form-group">
@@ -78,8 +129,13 @@
             </div>
             
             <footer>
-                <p>Powered by <strong>Guido Ballarini</strong></p>
-                <p>&copy; 2026 - Tutti i diritti riservati</p>
+                <p style="margin-bottom: 5px;">Powered by <strong>Guido Ballarini</strong></p>
+                <p style="margin-bottom: 5px;">
+                    <a href="https://github.com/Gheben/QRepair" target="_blank" style="margin: 0 8px; text-decoration: none;" title="GitHub Repository">⚫ GitHub</a>
+                    <a href="https://buymeacoffee.com/guidoballau" target="_blank" style="margin: 0 8px; text-decoration: none; color: #FFDD00;" title="Buy Me a Coffee">☕ Donazione</a>
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=8RF28JBPLYASN" target="_blank" style="margin: 0 8px; text-decoration: none; color: #0070BA;" title="PayPal">💳 PayPal</a>
+                </p>
+                <p style="margin-bottom: 0;">&copy; 2026 - Tutti i diritti riservati</p>
             </footer>
         </div>
     </div>
@@ -88,9 +144,86 @@
         const form = document.getElementById('form-qr');
         const resultDiv = document.getElementById('result');
         const qrcodeDiv = document.getElementById('qrcode');
+        
+        // Array clienti per autocomplete
+        let allClients = [];
 
         // Variabile per dati fornitore
         let fornitoreSetting = { nomeAzienda: 'GB Service', telefono: '3331234567' };
+        
+        // Carica clienti per autocomplete
+        async function loadClients() {
+            try {
+                const response = await fetch('http://localhost:3000/api/clienti');
+                const data = await response.json();
+                if (data.success) {
+                    allClients = data.data;
+                }
+            } catch (error) {
+                console.error('Errore caricamento clienti:', error);
+            }
+        }
+        
+        // Autocomplete sul campo nome
+        const nomeInput = document.getElementById('nome');
+        const autocompleteList = document.getElementById('autocomplete-list');
+        
+        nomeInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (query.length < 2) {
+                autocompleteList.classList.remove('active');
+                autocompleteList.innerHTML = '';
+                return;
+            }
+            
+            const matches = allClients.filter(client => 
+                `${client.nome} ${client.cognome}`.toLowerCase().includes(query) ||
+                client.tel.includes(query)
+            ).slice(0, 5);
+            
+            if (matches.length === 0) {
+                autocompleteList.classList.remove('active');
+                autocompleteList.innerHTML = '';
+                return;
+            }
+            
+            autocompleteList.innerHTML = matches.map(client => `
+                <div class="autocomplete-item" onclick="selectClient(${client.id})">
+                    <span class="autocomplete-client-name">${client.nome} ${client.cognome}</span>
+                    <span class="autocomplete-client-tel">${client.tel}</span>
+                </div>
+            `).join('');
+            
+            autocompleteList.classList.add('active');
+        });
+        
+        // Chiudi autocomplete al click fuori
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.autocomplete-container')) {
+                autocompleteList.classList.remove('active');
+            }
+        });
+        
+        // Seleziona cliente dall'autocomplete
+        function selectClient(clientId) {
+            const client = allClients.find(c => c.id === clientId);
+            if (!client) return;
+            
+            // Precompila i campi
+            document.getElementById('nome').value = `${client.nome} ${client.cognome}`;
+            document.getElementById('tel').value = client.tel;
+            document.getElementById('lingua').value = client.lingua;
+            
+            // Aggiorna flag
+            const flagMap = { it: 'it', en: 'gb', de: 'de' };
+            document.getElementById('flag-preview').className = `fi fi-${flagMap[client.lingua]}`;
+            
+            autocompleteList.classList.remove('active');
+            
+            // Focus sul campo modello
+            document.getElementById('modello').focus();
+        }
         
         // Verifica autenticazione
         fetch('http://localhost:3000/api/auth/check')
@@ -100,6 +233,7 @@
                     window.location.href = '/login';
                 } else {
                     loadFornitoreSetting();
+                    loadClients(); // Carica clienti per autocomplete
                     checkServerConnection();
                 }
             })
@@ -169,6 +303,44 @@
             const dataIta = dataObj.toLocaleDateString('it-IT');
             const scadenzaObj = new Date(scadenza);
             const scadenzaIta = scadenzaObj.toLocaleDateString('it-IT');
+            
+            // Crea o aggiorna il cliente
+            try {
+                const clientExistsResponse = await fetch(`http://localhost:3000/api/clienti/search?q=${encodeURIComponent(telCliente)}`);
+                const clientExistsData = await clientExistsResponse.json();
+                
+                if (clientExistsData.success && clientExistsData.data.length > 0) {
+                    // Cliente già esiste
+                    console.log('Cliente già esistente:', clientExistsData.data[0]);
+                } else {
+                    // Crea nuovo cliente
+                    const nameParts = nomeCliente.trim().split(' ');
+                    const nome = nameParts[0];
+                    const cognome = nameParts.slice(1).join(' ') || nome;
+                    
+                    const clientData = {
+                        nome: nome,
+                        cognome: cognome,
+                        tel: telCliente,
+                        lingua: lingua,
+                        email: null,
+                        piva: null
+                    };
+                    
+                    const createClientResponse = await fetch('http://localhost:3000/api/clienti', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(clientData)
+                    });
+                    
+                    if (createClientResponse.ok) {
+                        console.log('Cliente creato automaticamente');
+                    }
+                }
+            } catch (error) {
+                console.error('Errore creazione cliente:', error);
+                // Continua comunque con la creazione del QR
+            }
             
             // Salva tramite API prima di generare l'URL (per ottenere l'ID)
             let recordId;

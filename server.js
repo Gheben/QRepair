@@ -643,6 +643,157 @@ app.delete('/api/users/:id', requireAuth, (req, res) => {
 
 // ==================== FINE ROTTE GESTIONE UTENTI ====================
 
+// ==================== ROTTE GESTIONE CLIENTI ====================
+
+/**
+ * GET /api/clienti - Ottieni tutti i clienti (PROTETTA)
+ */
+app.get('/api/clienti', requireAuth, (req, res) => {
+    try {
+        const clients = db.getAllClients();
+        res.json({ success: true, data: clients });
+    } catch (error) {
+        console.error('Errore GET clienti:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * GET /api/clienti/search?q=query - Cerca clienti (PROTETTA)
+ */
+app.get('/api/clienti/search', requireAuth, (req, res) => {
+    try {
+        const query = req.query.q || '';
+        const clients = db.searchClients(query);
+        res.json({ success: true, data: clients });
+    } catch (error) {
+        console.error('Errore ricerca clienti:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * GET /api/clienti/:id - Ottieni un cliente per ID (PROTETTA)
+ */
+app.get('/api/clienti/:id', requireAuth, (req, res) => {
+    try {
+        const client = db.getClientById(req.params.id);
+        if (client) {
+            res.json({ success: true, data: client });
+        } else {
+            res.status(404).json({ success: false, error: 'Cliente non trovato' });
+        }
+    } catch (error) {
+        console.error('Errore GET cliente:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * POST /api/clienti - Crea un nuovo cliente (PROTETTA)
+ */
+app.post('/api/clienti', requireAuth, (req, res) => {
+    try {
+        const { nome, cognome, email, tel, lingua, piva } = req.body;
+        
+        // Validazione campi obbligatori
+        if (!nome || !cognome || !tel || !lingua) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Campi obbligatori: nome, cognome, tel, lingua' 
+            });
+        }
+        
+        // Validazione lingua
+        const validLanguages = ['it', 'en', 'de'];
+        if (!validLanguages.includes(lingua.toLowerCase())) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Lingua non valida. Valori accettati: it, en, de' 
+            });
+        }
+        
+        const newClient = db.addClient({
+            nome: nome.trim(),
+            cognome: cognome.trim(),
+            email: email ? email.trim() : null,
+            tel: tel.trim(),
+            lingua: lingua.toLowerCase(),
+            piva: piva ? piva.trim() : null,
+            createdAt: new Date().toISOString()
+        });
+        
+        res.status(201).json({ success: true, data: newClient });
+    } catch (error) {
+        console.error('Errore POST cliente:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * PUT /api/clienti/:id - Aggiorna un cliente (PROTETTA)
+ */
+app.put('/api/clienti/:id', requireAuth, (req, res) => {
+    try {
+        const { nome, cognome, email, tel, lingua, piva } = req.body;
+        
+        // Validazione campi obbligatori
+        if (!nome || !cognome || !tel || !lingua) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Campi obbligatori: nome, cognome, tel, lingua' 
+            });
+        }
+        
+        // Validazione lingua
+        const validLanguages = ['it', 'en', 'de'];
+        if (!validLanguages.includes(lingua.toLowerCase())) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Lingua non valida. Valori accettati: it, en, de' 
+            });
+        }
+        
+        const success = db.updateClient(req.params.id, {
+            nome: nome.trim(),
+            cognome: cognome.trim(),
+            email: email ? email.trim() : null,
+            tel: tel.trim(),
+            lingua: lingua.toLowerCase(),
+            piva: piva ? piva.trim() : null
+        });
+        
+        if (success) {
+            res.json({ success: true, message: 'Cliente aggiornato' });
+        } else {
+            res.status(404).json({ success: false, error: 'Cliente non trovato' });
+        }
+    } catch (error) {
+        console.error('Errore PUT cliente:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * DELETE /api/clienti/:id - Elimina un cliente (PROTETTA)
+ */
+app.delete('/api/clienti/:id', requireAuth, (req, res) => {
+    try {
+        const success = db.deleteClient(req.params.id);
+        
+        if (success) {
+            res.json({ success: true, message: 'Cliente eliminato' });
+        } else {
+            res.status(404).json({ success: false, error: 'Cliente non trovato' });
+        }
+    } catch (error) {
+        console.error('Errore DELETE cliente:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ==================== FINE ROTTE GESTIONE CLIENTI ====================
+
 // Gestione chiusura graceful
 process.on('SIGINT', () => {
     console.log('\n🛑 Chiusura server...');
