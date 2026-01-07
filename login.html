@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
     <title>Login - QR Code Maintenance</title>
     <link rel="icon" type="image/png" href="QRepair.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/QRepair.png">
     <link rel="stylesheet" href="style.css">
     <style>
         .login-container {
@@ -96,6 +99,56 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
+        
+        .install-prompt {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .install-prompt h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        
+        .install-prompt p {
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            opacity: 0.95;
+        }
+        
+        .install-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn-install {
+            padding: 8px 20px;
+            background: white;
+            color: #059669;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-dismiss {
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -105,6 +158,16 @@
                 <img src="QRepair.png" alt="QRepair Logo" class="login-icon">
                 <h1>Reserved Area</h1>
                 <p style="color: #666;">Login to manage QR Codes</p>
+            </div>
+            
+            <!-- Install PWA Prompt -->
+            <div id="install-prompt" class="install-prompt">
+                <h3>📱 Install QRepair App</h3>
+                <p>Add QRepair to your home screen for quick access!</p>
+                <div class="install-buttons">
+                    <button id="install-btn" class="btn-install">✨ Install</button>
+                    <button id="dismiss-btn" class="btn-dismiss">Later</button>
+                </div>
             </div>
             
             <div id="error" class="error-message"></div>
@@ -174,6 +237,72 @@
                 loginBtn.textContent = '🚀 LOGIN';
             }
         });
+
+        // ==================== PWA INSTALL PROMPT ====================
+        let deferredPrompt;
+        const installPrompt = document.getElementById('install-prompt');
+        const installBtn = document.getElementById('install-btn');
+        const dismissBtn = document.getElementById('dismiss-btn');
+
+        // Intercetta l'evento beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Previeni il prompt automatico del browser
+            e.preventDefault();
+            // Salva l'evento per usarlo dopo
+            deferredPrompt = e;
+            
+            // Verifica se l'utente ha già dismissato il prompt
+            const dismissed = localStorage.getItem('pwa-install-dismissed');
+            if (!dismissed) {
+                // Mostra il nostro prompt personalizzato
+                installPrompt.style.display = 'block';
+            }
+        });
+
+        // Gestisci il click sul pulsante Install
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            // Mostra il prompt di installazione nativo
+            deferredPrompt.prompt();
+            
+            // Aspetta la scelta dell'utente
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to install prompt: ${outcome}`);
+            
+            // Nascondi il prompt
+            installPrompt.style.display = 'none';
+            
+            // Resetta deferredPrompt
+            deferredPrompt = null;
+        });
+
+        // Gestisci il click sul pulsante Dismiss
+        dismissBtn.addEventListener('click', () => {
+            installPrompt.style.display = 'none';
+            // Salva in localStorage che l'utente ha dismissato (per 7 giorni)
+            const dismissedUntil = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
+            localStorage.setItem('pwa-install-dismissed', dismissedUntil);
+        });
+
+        // Rimuovi il flag di dismissione se è scaduto
+        const dismissed = localStorage.getItem('pwa-install-dismissed');
+        if (dismissed && new Date().getTime() > parseInt(dismissed)) {
+            localStorage.removeItem('pwa-install-dismissed');
+        }
+
+        // Registra Service Worker per PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>

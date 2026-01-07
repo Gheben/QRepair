@@ -137,6 +137,18 @@ app.use((req, res, next) => {
     next();
 });
 
+// Serve manifest.json con il Content-Type corretto
+app.get('/manifest.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/manifest+json');
+    res.sendFile(__dirname + '/manifest.json');
+});
+
+// Serve service-worker.js con il Content-Type corretto
+app.get('/service-worker.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(__dirname + '/service-worker.js');
+});
+
 app.use(express.static(__dirname)); // Serve i file HTML/CSS/JS
 
 // ==================== ROTTE AUTENTICAZIONE ====================
