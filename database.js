@@ -574,7 +574,7 @@ class QRDatabase {
         `);
         
         stmt.run([
-            data.username,
+            data.username.toLowerCase(),
             data.password, // Deve essere già hashata
             data.nome,
             data.createdAt || new Date().toISOString()
@@ -601,7 +601,7 @@ class QRDatabase {
         `);
         
         stmt.run([
-            data.username,
+            data.username ? data.username.toLowerCase() : data.username,
             data.nome,
             data.password, // Deve essere già hashata se cambiata
             id

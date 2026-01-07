@@ -42,7 +42,7 @@ async function createDefaultAdmin() {
                 // Modalità demo: crea utente demo/demo
                 const hashedPassword = await bcrypt.hash('demo', 10);
                 db.addUser({
-                    username: 'demo',
+                    username: 'demo'.toLowerCase(),
                     password: hashedPassword,
                     nome: 'Demo User'
                 });
@@ -52,7 +52,7 @@ async function createDefaultAdmin() {
                 // Modalità normale: crea utente admin/admin
                 const hashedPassword = await bcrypt.hash('admin', 10);
                 db.addUser({
-                    username: 'admin',
+                    username: 'admin'.toLowerCase(),
                     password: hashedPassword,
                     nome: 'Amministratore'
                 });
@@ -628,7 +628,7 @@ app.post('/api/users', requireAuth, async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         
         const newUser = db.addUser({
-            username,
+            username: username.toLowerCase(),
             password: hashedPassword,
             nome
         });
@@ -664,7 +664,7 @@ app.put('/api/users/:id', requireAuth, async (req, res) => {
         const { username, password, nome } = req.body;
         
         const updateData = {};
-        if (username) updateData.username = username;
+        if (username) updateData.username = username.toLowerCase();
         if (nome) updateData.nome = nome;
         if (password) {
             // Validazione password
