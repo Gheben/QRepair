@@ -582,7 +582,7 @@
             }
             
             document.getElementById('maintenances-title').textContent = 
-                `🔧 Manutenzioni di ${client.nome} ${client.cognome}`;
+                `🔧 Maintenances of ${client.nome} ${client.cognome}`;
             
             const clientMaintenances = allMaintenances.filter(m => String(m.client_id) === String(clientId));
             console.log('Client maintenances:', clientMaintenances);
@@ -622,8 +622,8 @@
                         <td>${scadenzaFormat}</td>
                         <td>
                             <div class="action-buttons">
-                                <button onclick="showMaintenanceUpdateModal('${m.id}')" class="btn-action btn-edit">🔄 Manutenzione Eseguita</button>
-                                <a href="/info?id=${m.id}" target="_blank" class="btn-action btn-view">👁️ Vedi</a>
+                                <button onclick="showMaintenanceUpdateModal('${m.id}')" class="btn-action btn-edit">🔄 Maintenance Performed</button>
+                                <a href="/info?id=${m.id}" target="_blank" class="btn-action btn-view">👁️ View</a>
                                 <button onclick="deleteMaintenance('${m.id}', '${m.modello || 'Manutenzione'}')" class="btn-action btn-delete">🗑️</button>
                             </div>
                         </td>
@@ -677,7 +677,7 @@
                 return;
             }
             
-            if (new Date(newScadenza) <= new Date(newData)) {
+            if (new Date(scadenza) <= new Date(data)) {
                 alert('⚠️ The due date must be after the maintenance date');
                 return;
             }
