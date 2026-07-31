@@ -15,9 +15,9 @@
     "sql.js": "^1.10.3",
     "cors": "^2.8.5",
     "express-session": "^1.17.3",
-    "bcrypt": "^5.1.1"
+    "bcrypt": "^6.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.1.14"
   }
 }
